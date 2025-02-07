@@ -1,0 +1,22 @@
+<div class="card">
+  <p-table [value]="notasFiscais" [tableStyle]="{'min-width': '50rem'}">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Número</th>
+        <th>Data</th>
+        <th>Fornecedor</th>
+        <th>Valor</th>
+        <th>Status</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-nota>
+      <tr>
+        <td>{{nota.numero}}</td>
+        <td>{{nota.data | date:'dd/MM/yyyy'}}</td>
+        <td>{{nota.fornecedor}}</td>
+        <td>{{nota.valor | currency:'BRL'}}</td>
+        <td>{{nota.status}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
