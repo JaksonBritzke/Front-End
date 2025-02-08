@@ -4,7 +4,6 @@
     <h2 class="m-2">Lista de Produtos</h2>
   </div>
   <p-toolbar>
-
     <p-button label="Novo" icon="pi pi-plus" (onClick)="abrirModalCadastro()"></p-button>
     <ng-template pTemplate="left">
       <p-inputgroup>
@@ -16,26 +15,25 @@
     </ng-template>
   </p-toolbar>
 
-  <p-table #dt2 [value]="produtos" [tableStyle]="{'min-width': '50rem'}" [globalFilterFields]="['nome', 'categoria']"
-    responsiveLayout="scroll" [rows]="10" stripedRows>
+  <p-table #dt2 [value]="produtos" [tableStyle]="{'min-width': '50rem'}"
+    [globalFilterFields]="['codigo', 'descricao', 'situacao']" responsiveLayout="scroll" [rows]="5" [paginator]="true"
+    [rowsPerPageOptions]="[5,10,25,50]" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros" stripedRows>
+
     <ng-template pTemplate="header">
       <tr>
-        <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
-        <th pSortableColumn="nome">Nome <p-sortIcon field="nome"></p-sortIcon></th>
-        <th pSortableColumn="categoria">Categoria <p-sortIcon field="categoria"></p-sortIcon></th>
-        <th pSortableColumn="preco">Preço <p-sortIcon field="preco"></p-sortIcon></th>
-        <th pSortableColumn="estoque">Estoque <p-sortIcon field="estoque"></p-sortIcon></th>
+        <th pSortableColumn="codigo">Código <p-sortIcon field="codigo"></p-sortIcon></th>
+        <th pSortableColumn="descricao">Descrição <p-sortIcon field="descricao"></p-sortIcon></th>
+        <th pSortableColumn="situacao">Situação <p-sortIcon field="situacao"></p-sortIcon></th>
         <th>Ações</th>
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-produto>
       <tr>
-        <td>{{ produto.id }}</td>
-        <td>{{ produto.nome }}</td>
-        <td>{{ produto.categoria }}</td>
-        <td>{{ produto.preco | currency:'BRL' }}</td>
-        <td>{{ produto.estoque }}</td>
+        <td>{{ produto.codigo }}</td>
+        <td>{{ produto.descricao }}</td>
+        <td>{{ produto.situacao | cnpjFormat}}</td>
         <td>
           <div class="flex gap-2">
             <p-button icon="pi pi-pencil" rounded outlined (click)="editarProduto(produto)">
@@ -48,3 +46,46 @@
     </ng-template>
   </p-table>
 </div>
+
+<p-dialog [(visible)]="produtoDialog" [modal]="true" [style]="{width: '650px'}" header="Detalhes do Produto"
+  [draggable]="false" [resizable]="false" (onHide)="ocultarModal()">
+  <p-divider />
+
+  <p-card styleClass="mb-0">
+    <form [formGroup]="produtoForm" class="formgrid grid">
+      <div class="field col-12">
+        <label for="descricao" class="block font-medium mb-2">Descrição</label>
+        <input pInputText id="descricao" formControlName="descricao" class="w-full"
+          [ngClass]="{'ng-invalid ng-dirty': submitted && produtoForm.get('descricao')?.invalid}">
+        <small class="p-error block mt-2" *ngIf="submitted && produtoForm.get('descricao')?.invalid">
+          Descrição é obrigatória
+        </small>
+      </div>
+
+      <div class="field col-12 md:col-6">
+        <label for="situacao" class="block font-medium mb-2">Situação</label>
+        <p-dropdown id="situacao" formControlName="situacao" [options]="situacaoOptions" optionLabel="label"
+          optionValue="value" placeholder="Selecione a situação" [style]="{ width: '100%', height: '37px' }"
+          appendTo="body" [ngClass]="{'ng-invalid ng-dirty': submitted && produtoForm.get('situacao')?.invalid}">
+        </p-dropdown>
+        <small class="p-error block mt-2" *ngIf="submitted && produtoForm.get('situacao')?.invalid">
+          Situação é obrigatória
+        </small>
+      </div>
+    </form>
+  </p-card>
+
+  <p-divider />
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2">
+      <button pButton label="Cancelar" icon="pi pi-times" class="p-button-secondary" (click)="ocultarModal()">
+      </button>
+      <button pButton label="Salvar" icon="pi pi-check" class="p-button-primary" (click)="salvarProduto()">
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+
+<p-confirmDialog header="Confirmação" icon="pi pi-exclamation-triangle" acceptLabel="Sim" rejectLabel="Não">
+</p-confirmDialog>

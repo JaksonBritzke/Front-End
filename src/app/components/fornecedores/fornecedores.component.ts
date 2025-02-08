@@ -138,12 +138,8 @@ export class FornecedoresComponent implements OnInit {
             });
             this.carregarFornecedores();
           },
-          error: () => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Erro',
-              detail: 'Erro ao excluir fornecedor',
-            });
+          error: (err) => {
+            this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
           },
         });
       },
@@ -214,12 +210,8 @@ export class FornecedoresComponent implements OnInit {
           this.carregarFornecedores();
           this.ocultarModal();
         },
-        error: (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: 'Erro ao cadastrar fornecedor',
-          });
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
         },
       });
     }

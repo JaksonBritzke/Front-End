@@ -1,7 +1,7 @@
+import { SituacaoProduto } from './enum/situacao-produto.';
+
 export interface Produto {
-  id: number;
-  nome: string;
-  categoria: string;
-  preco: number;
-  estoque: number;
+  codigo: number;
+  descricao: string;
+  situacao: SituacaoProduto;
 }
