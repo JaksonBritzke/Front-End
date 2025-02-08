@@ -11,6 +11,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
@@ -28,9 +29,10 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { Table, TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { delay } from 'rxjs';
 import { NotaFiscal } from '../../model/NotaFiscal';
 import { NotaService } from './nota.service';
-import { delay } from 'rxjs';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-nota-fiscal',
@@ -46,6 +48,7 @@ import { delay } from 'rxjs';
     InputMaskModule,
     DatePickerModule,
     InputTextModule,
+    AutoCompleteModule,
     InputGroupModule,
     InputGroupAddonModule,
     ReactiveFormsModule,
@@ -54,6 +57,7 @@ import { delay } from 'rxjs';
     CalendarModule,
     FormsModule,
     ButtonModule,
+    InputNumberModule,
     DialogModule,
     ToolbarModule,
     CardModule,
@@ -76,6 +80,10 @@ export class NotaFiscalComponent {
   notaForm: FormGroup;
   notaFiscal: NotaFiscal[] = [];
   notaDialog: boolean = false;
+  fornecedoresFiltrados: any[] = [];
+  produtosFiltrados: any[] = [];
+  enderecoFornecedor: string = '';
+  produtosSelecionados: any[] = [];
 
   constructor(
     private messageService: MessageService,
@@ -98,31 +106,67 @@ export class NotaFiscalComponent {
   carregarNotas() {
     this.loading = true;
     // Simulando um delay para verificar o loading
-    this.notaService.getNotas().pipe(
-      delay(1000)
-    ).subscribe({
-      next: (data) => {
-        this.notaFiscal = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Erro ao carregar notas', err);
-        this.loading = false;
-      },
-    });
+    this.notaService
+      .getNotas()
+      .pipe(delay(1000))
+      .subscribe({
+        next: (data) => {
+          this.notaFiscal = data;
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Erro ao carregar notas', err);
+          this.loading = false;
+        },
+      });
+  }
+
+  filtrarFornecedor(event: any) {
+    // Implemente a lógica de filtro de fornecedores
+    const query = event.query;
+    // Exemplo: this.fornecedoresFiltrados = await this.service.buscarFornecedores(query);
+  }
+
+  filtrarProdutos(event: any) {
+    // Implemente a lógica de filtro de produtos
+    const query = event.query;
+    // Exemplo: this.produtosFiltrados = await this.service.buscarProdutos(query);
+  }
+
+  adicionarProduto() {
+    const produto = this.notaForm.get('produtoTemp')?.value;
+    if (produto) {
+      const produtoComQuantidade = {
+        ...produto,
+        quantidade: 1
+      };
+      this.produtosSelecionados.push(produtoComQuantidade);
+      this.notaForm.get('produtoTemp')?.reset();
+    }
+  }
+
+  onFornecedorSelect(event: any) {
+    this.enderecoFornecedor = `${event.endereco}, ${event.numero} - ${event.cidade}/${event.uf}`;
+  }
+
+  removerProduto(produto: any) {
+    const index = this.produtosSelecionados.indexOf(produto);
+    if (index > -1) {
+      this.produtosSelecionados.splice(index, 1);
+    }
   }
 
   ocultarModal() {
     this.notaDialog = false;
     this.submitted = false;
     this.notaForm.reset();
-    // this.notaForm.patchValue({ situacao: SituacaoProduto.ATIVO });
+    this.produtosSelecionados = [];
   }
 
   salvarNota() {
     this.submitted = true;
 
-    if (this.notaForm.invalid) {
+    if (this.notaForm.valid && this.produtosSelecionados.length > 0) {
       this.messageService.add({
         severity: 'error',
         summary: 'Erro',
@@ -183,7 +227,11 @@ export class NotaFiscalComponent {
     console.log('Excluir notaFiscal', notaFiscal);
   }
 
-  abrirModalCadastro() {}
+  abrirModalCadastro() {
+    this.notaForm.reset();
+    this.submitted = false;
+    this.notaDialog = true;
+  }
   onGlobalFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dt3.filterGlobal(filterValue, 'contains');
