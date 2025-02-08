@@ -1,7 +1,8 @@
 <div class="card">
   <p-toast></p-toast>
-
-  <!-- Toolbar com botões e campo de pesquisa -->
+  <div class="flex justify-content-between align-items-center">
+    <h2 class="m-2">Lista de Fornecedores</h2>
+  </div>
   <p-toolbar>
     <p-button label="Novo" icon="pi pi-plus" (onClick)="abrirModalCadastro()"></p-button>
     <ng-template pTemplate="left">
@@ -14,9 +15,9 @@
     </ng-template>
   </p-toolbar>
 
-  <!-- Tabela de fornecedores -->
   <p-table #dt [value]="fornecedores" [tableStyle]="{'min-width': '50rem'}"
     [globalFilterFields]="['nome', 'cnpj', 'email']" responsiveLayout="scroll" [rows]="10" stripedRows>
+
     <ng-template pTemplate="header">
       <tr>
         <th pSortableColumn="id">Código <p-sortIcon field="id"></p-sortIcon></th>
@@ -37,9 +38,10 @@
         <td>{{ fornecedor.email }}</td>
         <td>
           <div class="flex gap-2">
-            <p-button icon="pi pi-pencil" rounded outlined (click)="editarFornecedor(fornecedor)"></p-button>
-            <p-button icon="pi pi-trash" severity="danger" rounded outlined
-              (click)="excluirFornecedor(fornecedor)"></p-button>
+            <p-button icon="pi pi-pencil" rounded outlined (click)="editarFornecedor(fornecedor)">
+            </p-button>
+            <p-button icon="pi pi-trash" severity="danger" rounded outlined (click)="excluirFornecedor(fornecedor)">
+            </p-button>
           </div>
         </td>
       </tr>

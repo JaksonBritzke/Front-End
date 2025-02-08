@@ -39,7 +39,6 @@ export class FornecedoresComponent implements OnInit {
   @ViewChild('dt') dt!: Table;
   @ViewChild('filter') filter!: ElementRef;
   searchTerm: string = '';
-  items: MenuItem[] | undefined;
   fornecedores: Fornecedor[] = [
     {
       id: 1,
@@ -58,17 +57,8 @@ export class FornecedoresComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.items = [
-      {
-        label: 'Update',
-        icon: 'pi pi-refresh',
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-times',
-      },
-    ];
   }
+
 
   editarFornecedor(fornecedor: Fornecedor) {
     console.log('Editar fornecedor', fornecedor);
