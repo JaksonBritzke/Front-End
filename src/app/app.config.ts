@@ -1,9 +1,9 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import Material from '@primeng/themes/material';
 import { provideHttpClient } from '@angular/common/http';
 import { routes } from './app.routes';
+import Aura from '@primeng/themes/aura';
 import {
   provideClientHydration,
   withEventReplay,
@@ -14,9 +14,16 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimationsAsync(),
     providePrimeNG({
+      ripple: true,
+      inputVariant: 'filled' ,
       theme: {
-        preset: Material,
-      },
+        preset: Aura,
+        options: {
+            prefix: 'p',
+            darkModeSelector: 'system',
+            cssLayer: false
+        }
+    }
     }),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),

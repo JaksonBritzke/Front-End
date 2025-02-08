@@ -1,0 +1,67 @@
+// :host ::ng-deep {
+//   .p-dialog .p-dialog-content {
+//       padding: 0 0 1rem 0; // Removemos o padding para o card se ajustar melhor
+//   }
+
+//   .p-card {
+//       .p-card-body {
+//           padding: 1.5rem;
+//       }
+//   }
+
+//   .field {
+//       margin-bottom: 1.5rem;
+
+//       label {
+//           display: block;
+//           margin-bottom: 0.5rem;
+//           font-weight: 500;
+//           color: #495057;
+//       }
+
+//       input, .p-inputmask {
+//           width: 100%;
+//       }
+
+//       small.p-error {
+//           display: block;
+//           margin-top: 0.25rem;
+//       }
+//   }
+
+//   .p-dialog-footer {
+//       text-align: right;
+//       padding: 1rem 1.5rem;
+//       border-top: 1px solid #dee2e6;
+
+//       button {
+//           margin-left: 0.5rem;
+//       }
+//   }
+
+//   .grid {
+//       display: flex;
+//       flex-wrap: wrap;
+//       margin-right: -0.5rem;
+//       margin-left: -0.5rem;
+//       margin-top: -0.5rem;
+//   }
+
+//   .col-6 {
+//       flex: 0 0 50%;
+//       padding: 0.5rem;
+//   }
+
+//   // Estilo para a opção com divider
+//   .p-divider {
+//       margin: 1rem 0;
+
+//       .p-tag {
+//           background: #f8f9fa;
+//           color: #495057;
+//           border: 1px solid #dee2e6;
+//           padding: 0.5rem 1rem;
+//           font-weight: 500;
+//       }
+//   }
+// }
