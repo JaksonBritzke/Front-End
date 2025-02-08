@@ -15,8 +15,18 @@
     </ng-template>
   </p-toolbar>
 
-  <p-table #dt [value]="fornecedores" [tableStyle]="{'min-width': '50rem'}"
-    [globalFilterFields]="['nome', 'cnpj', 'email']" responsiveLayout="scroll" [rows]="10" stripedRows>
+  <p-table
+    #dt
+    [value]="fornecedores"
+    [tableStyle]="{'min-width': '50rem'}"
+    [globalFilterFields]="['nome', 'cnpj', 'email']"
+    responsiveLayout="scroll"
+    [rows]="5"
+    [paginator]="true"
+    [rowsPerPageOptions]="[5,10,25,50]"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+    stripedRows>
 
     <ng-template pTemplate="header">
       <tr>
@@ -49,146 +59,96 @@
   </p-table>
 </div>
 
-<p-dialog
-    [(visible)]="fornecedorDialog"
-    [modal]="true"
-    [style]="{width: '650px'}"
-    header="Detalhes do Fornecedor"
-    [draggable]="false"
-    [resizable]="false"
-    (onHide)="ocultarModal()">
-    <p-divider />
-    <p>{{this.fornecedorForm.value | json}}</p>
-    <p-card styleClass="mb-0">
-        <form [formGroup]="fornecedorForm" class="formgrid grid">
-            <div class="field col-12 md:col-6">
-                <label for="razaoSocial" class="block font-medium mb-2">Razão Social</label>
-                <input
-                    pInputText
-                    id="razaoSocial"
-                    formControlName="razaoSocial"
-                    class="w-full"
-                    [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('razaoSocial')?.invalid}">
-                <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('razaoSocial')?.invalid">
-                    Razão Social é obrigatória
-                </small>
-            </div>
+<p-dialog [(visible)]="fornecedorDialog" [modal]="true" [style]="{width: '650px'}" header="Detalhes do Fornecedor"
+  [draggable]="false" [resizable]="false" (onHide)="ocultarModal()">
+  <p-divider />
 
-            <div class="field col-12 md:col-6">
-                <label for="cnpj" class="block font-medium mb-2">CNPJ</label>
-                <p-inputMask
-                    id="cnpj"
-                    formControlName="cnpj"
-                    mask="99.999.999/9999-99"
-                    [style]="{ width: '100%', height: '37px' }"
-                    [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('cnpj')?.invalid}">
-                </p-inputMask>
-                <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('cnpj')?.invalid">
-                    CNPJ é obrigatório
-                </small>
-            </div>
+  <p-card styleClass="mb-0">
+    <form [formGroup]="fornecedorForm" class="formgrid grid">
+      <div class="field col-12 md:col-6">
+        <label for="razaoSocial" class="block font-medium mb-2">Razão Social</label>
+        <input pInputText id="razaoSocial" formControlName="razaoSocial" class="w-full"
+          [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('razaoSocial')?.invalid}">
+        <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('razaoSocial')?.invalid">
+          Razão Social é obrigatória
+        </small>
+      </div>
 
-            <div class="field col-12">
-              <label for="endereco" class="block font-medium mb-2">Endereço</label>
-              <input
-                  pInputText
-                  id="razaoSocial"
-                  formControlName="endereco"
-                  class="w-full"
-                  [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('endereco')?.invalid}">
-              <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('endereco')?.invalid">
-                  Endereço é obrigatório
-              </small>
-          </div>
+      <div class="field col-12 md:col-6">
+        <label for="cnpj" class="block font-medium mb-2">CNPJ</label>
+        <p-inputMask id="cnpj" formControlName="cnpj" mask="99.999.999/9999-99"
+          [style]="{ width: '100%', height: '37px' }"
+          [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('cnpj')?.invalid}">
+        </p-inputMask>
+        <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('cnpj')?.invalid">
+          CNPJ é obrigatório
+        </small>
+      </div>
 
-            <div class="field col-12 md:col-6">
-                <label for="email" class="block font-medium mb-2">E-mail</label>
-                <input
-                    pInputText
-                    id="email"
-                    formControlName="email"
-                    class="w-full"
-                    [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('email')?.invalid}">
-                <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('email')?.invalid">
-                    E-mail é obrigatório e deve ser válido
-                </small>
-            </div>
+      <div class="field col-12">
+        <label for="endereco" class="block font-medium mb-2">Endereço</label>
+        <input pInputText id="razaoSocial" formControlName="endereco" class="w-full"
+          [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('endereco')?.invalid}">
+        <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('endereco')?.invalid">
+          Endereço é obrigatório
+        </small>
+      </div>
 
-            <div class="field col-12 md:col-6">
-                <label for="telefone" class="block font-medium mb-2">Telefone</label>
-                <p-inputMask
-                    id="telefone"
-                    formControlName="telefone"
-                    mask="(99) 99999-9999"
-                    [style]="{ width: '100%', height: '37px' }"
-                    [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('telefone')?.invalid}">
-                </p-inputMask>
-                <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('telefone')?.invalid">
-                    Telefone é obrigatório
-                </small>
-            </div>
+      <div class="field col-12 md:col-6">
+        <label for="email" class="block font-medium mb-2">E-mail</label>
+        <input pInputText id="email" formControlName="email" class="w-full"
+          [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('email')?.invalid}">
+        <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('email')?.invalid">
+          E-mail é obrigatório e deve ser válido
+        </small>
+      </div>
 
-            <div class="field col-12 md:col-6">
-                <label for="situacao" class="block font-medium mb-2">Situação</label>
-                <p-dropdown
-                    id="situacao"
-                    formControlName="situacao"
-                    [options]="situacaoOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Selecione a situação"
-                    [style]="{ width: '100%', height: '37px' }"
-                    appendTo="body"
-                    [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('situacao')?.invalid}">
-                </p-dropdown>
-                <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('situacao')?.invalid">
-                    Situação é obrigatória
-                </small>
-            </div>
+      <div class="field col-12 md:col-6">
+        <label for="telefone" class="block font-medium mb-2">Telefone</label>
+        <p-inputMask id="telefone" formControlName="telefone" mask="(99) 99999-9999"
+          [style]="{ width: '100%', height: '37px' }"
+          [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('telefone')?.invalid}">
+        </p-inputMask>
+        <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('telefone')?.invalid">
+          Telefone é obrigatório
+        </small>
+      </div>
 
-            <div class="field col-12 md:col-6" *ngIf="fornecedorForm.get('situacao')?.value === 'BAIXADO'">
-                <label for="dataBaixa" class="block font-medium mb-2">Data de Baixa</label>
-                <p-datePicker
-                    id="dataBaixa"
-                    formControlName="dataBaixa"
-                    dateFormat="dd/mm/yy"
-                    [showIcon]="true"
-                    [style]="{ width: '100%', height: '37px' }"
-                    appendTo="body"
-                    [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('dataBaixa')?.invalid}">
-                </p-datePicker>
-                <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('dataBaixa')?.invalid">
-                    Data de Baixa é obrigatória
-                </small>
-            </div>
-        </form>
-    </p-card>
+      <div class="field col-12 md:col-6">
+        <label for="situacao" class="block font-medium mb-2">Situação</label>
+        <p-dropdown id="situacao" formControlName="situacao" [options]="situacaoOptions" optionLabel="label"
+          optionValue="value" placeholder="Selecione a situação" [style]="{ width: '100%', height: '37px' }"
+          appendTo="body" [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('situacao')?.invalid}">
+        </p-dropdown>
+        <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('situacao')?.invalid">
+          Situação é obrigatória
+        </small>
+      </div>
 
-    <p-divider />
-    <ng-template pTemplate="footer">
-        <div class="flex justify-content-end gap-2">
-            <button
-                pButton
-                label="Cancelar"
-                icon="pi pi-times"
-                class="p-button-secondary"
-                (click)="ocultarModal()">
-            </button>
-            <button
-                pButton
-                label="Salvar"
-                icon="pi pi-check"
-                class="p-button-primary"
-                (click)="salvarFornecedor()">
-            </button>
-        </div>
-    </ng-template>
+      <div class="field col-12 md:col-6" *ngIf="fornecedorForm.get('situacao')?.value === 'BAIXADO'">
+        <label for="dataBaixa" class="block font-medium mb-2">Data de Baixa</label>
+        <p-datePicker id="dataBaixa" formControlName="dataBaixa" dateFormat="dd/mm/yy" [showIcon]="true"
+          [style]="{ width: '100%', height: '37px' }" appendTo="body"
+          [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('dataBaixa')?.invalid}">
+        </p-datePicker>
+        <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('dataBaixa')?.invalid">
+          Data de Baixa é obrigatória
+        </small>
+      </div>
+    </form>
+  </p-card>
+
+  <p-divider />
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2">
+      <button pButton label="Cancelar" icon="pi pi-times" class="p-button-secondary" (click)="ocultarModal()">
+      </button>
+      <button pButton label="Salvar" icon="pi pi-check" class="p-button-primary" (click)="salvarFornecedor()">
+      </button>
+    </div>
+  </ng-template>
 </p-dialog>
 
 
-<p-confirmDialog
-    header="Confirmação"
-    icon="pi pi-exclamation-triangle"
-    acceptLabel="Sim"
-    rejectLabel="Não">
+<p-confirmDialog header="Confirmação" icon="pi pi-exclamation-triangle" acceptLabel="Sim" rejectLabel="Não">
 </p-confirmDialog>

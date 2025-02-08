@@ -1,13 +1,11 @@
-.custom-menu-item .p-menuitem-icon {
-  margin-right: 50px;
+.layout-content {
+  padding: 4rem;
 }
 
-.layout-wrapper {
-  min-height: 100vh;
-}
-.layout-content {
-  padding: 2rem;
-}
-.container {
-  margin: 0 auto;
+.fixed-menubar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }

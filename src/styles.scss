@@ -1,3 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
+
+:root {
+  --font-family: 'Poppins', sans-serif;
+}
+
+body, .p-component {
+  font-family: var(--font-family);
+  font-size: 14px; // Ajuste conforme necessário
+}
+
+
