@@ -7,10 +7,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
@@ -57,11 +58,12 @@ import { FornecedorService } from './fornecedores.service';
     CardModule,
     ToastModule,
     InputIconModule,
+    ConfirmDialogModule,
     ToolbarModule,
     IconFieldModule,
     CnpjFormatPipe,
   ],
-  providers: [MessageService, FornecedorService],
+  providers: [MessageService, FornecedorService, ConfirmationService],
   templateUrl: './fornecedores.component.html',
   styleUrl: './fornecedores.component.scss',
 })
@@ -81,6 +83,7 @@ export class FornecedoresComponent implements OnInit {
   constructor(
     private fornecedorService: FornecedorService,
     private messageService: MessageService,
+    private confirmationService: ConfirmationService,
     private fb: FormBuilder
   ) {
     this.fornecedorForm = this.fb.group({
@@ -110,20 +113,41 @@ export class FornecedoresComponent implements OnInit {
   }
 
   editarFornecedor(fornecedor: Fornecedor) {
-   // Clona o objeto para evitar referência direta
-   const fornecedorEdit = { ...fornecedor };
+    // Clona o objeto para evitar referência direta
+    const fornecedorEdit = { ...fornecedor };
 
-   if (fornecedorEdit.dataBaixa) {
-     fornecedorEdit.dataBaixa = new Date(fornecedorEdit.dataBaixa);
-   }
+    if (fornecedorEdit.dataBaixa) {
+      fornecedorEdit.dataBaixa = new Date(fornecedorEdit.dataBaixa);
+    }
 
-   this.fornecedorForm.patchValue(fornecedorEdit);
+    this.fornecedorForm.patchValue(fornecedorEdit);
 
-   this.fornecedorDialog = true;
+    this.fornecedorDialog = true;
   }
 
   excluirFornecedor(fornecedor: Fornecedor) {
-    console.log('Excluir fornecedor', fornecedor);
+    this.confirmationService.confirm({
+      message: `Deseja realmente excluir o fornecedor ${fornecedor.razaoSocial}?`,
+      accept: () => {
+        this.fornecedorService.deleteFornecedor(fornecedor.codigo).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Sucesso',
+              detail: 'Fornecedor excluído com sucesso',
+            });
+            this.carregarFornecedores();
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro',
+              detail: 'Erro ao excluir fornecedor',
+            });
+          },
+        });
+      },
+    });
   }
 
   salvarFornecedor() {
