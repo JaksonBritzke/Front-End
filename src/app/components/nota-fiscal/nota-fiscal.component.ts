@@ -87,6 +87,7 @@ export class NotaFiscalComponent {
   produtos: Produto[] = [];
   notaDialog: boolean = false;
   fornecedoresFiltrados: any[] = [];
+  fornecedorDisplay: string = '';
   produtosFiltrados: any[] = [];
   enderecoFornecedor: string = '';
   produtosSelecionados: any[] = [];
@@ -179,14 +180,19 @@ export class NotaFiscalComponent {
     if (event && event.value) {
       this.fornecedorSelecionado = event.value;
 
-      // Armazena o código no formControl, mas mantém a visualização da razão social
-      this.notaForm.get('fornecedorId')?.setValue(event.value.razaoSocial);
+      // Atualiza o display com a razão social
+      this.fornecedorDisplay = event.value.razaoSocial;
+
+      // Atualiza o form com o código
+      this.notaForm.patchValue({
+        fornecedorId: event.value.codigo
+      });
 
       if (event.value.situacao === 'SUSPENSO') {
         this.messageService.add({
           severity: 'warn',
           summary: 'Atenção',
-          detail: 'Este fornecedor está suspenso no sistema.',
+          detail: 'Este fornecedor está suspenso no sistema.'
         });
         this.limparFornecedor();
         return;
@@ -195,7 +201,7 @@ export class NotaFiscalComponent {
       this.notaForm.get('fornecedorId')?.updateValueAndValidity();
     }
   }
-  
+
   isFornecedorSelecionado(): boolean {
     return this.fornecedorSelecionado !== null;
   }
@@ -302,8 +308,9 @@ export class NotaFiscalComponent {
 
   limparFornecedor() {
     this.fornecedorSelecionado = null;
+    this.fornecedorDisplay = '';
     this.notaForm.patchValue({
-      fornecedorId: null,
+      fornecedorId: null
     });
   }
 

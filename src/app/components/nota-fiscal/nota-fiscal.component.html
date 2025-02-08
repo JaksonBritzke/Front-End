@@ -70,7 +70,7 @@
           <div class="col-5">
             <div class="field mb-3">
               <label for="numero1" class="block font-medium mb-2">Nro Nota</label>
-              <p-inputNumber id="numero1" formControlName="numero" [showButtons]="false" size="small" class="w-full" onfocus="true"
+              <p-inputNumber id="numero1" formControlName="numero" [showButtons]="false" size="small" class="w-full" autofocus
               [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('fornecedorId')?.invalid}">
               </p-inputNumber>
               <small class="p-error block mt-2" *ngIf="submitted && notaForm.get('numero')?.invalid">
@@ -100,7 +100,8 @@
               <p-autoComplete
               id="fornecedor"
               size="small"
-              formControlName="fornecedorId"
+              [(ngModel)]="fornecedorDisplay"
+              [ngModelOptions]="{standalone: true}"
               [suggestions]="fornecedoresFiltrados"
               (completeMethod)="filtrarFornecedor($event)"
               field="razaoSocial"
@@ -122,6 +123,8 @@
             </div>
           </div>
         </div>
+        <pre>{{ notaForm.value | json }}</pre>
+
       </div>
 
       <!-- Lado Direito -->
