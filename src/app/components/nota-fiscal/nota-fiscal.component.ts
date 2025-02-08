@@ -462,15 +462,20 @@ export class NotaFiscalComponent {
     });
   }
 
-  removerItem(item: ItemNotaFiscal) {
-    this.confirmationService.confirm({
-      message: 'Deseja realmente remover este item?',
-      accept: () => {
-        this.itensNotaFiscal = this.itensNotaFiscal.filter((i) => i !== item);
-        this.atualizarValorTotal();
-      },
-    });
-  }
+// Atualizar a assinatura do método para aceitar ItemNotaFiscalView
+removerItem(item: ItemNotaFiscalView) {
+  this.confirmationService.confirm({
+    message: 'Deseja realmente remover este item?',
+    accept: () => {
+      this.itensNotaFiscal = this.itensNotaFiscal.filter((i) => i !== item);
+
+      this.notaForm.patchValue({
+        itens: this.itensNotaFiscal
+      });
+      this.atualizarValorTotal();
+    },
+  });
+}
 
   atualizarValorTotal() {
     const valorTotal = this.itensNotaFiscal.reduce(
@@ -478,5 +483,9 @@ export class NotaFiscalComponent {
       0
     );
     this.notaForm.patchValue({ valorTotal });
+  }
+
+  getTotalValorTotal(): number {
+    return this.itensNotaFiscal.reduce((total, nota) => total + nota.valorTotal, 0);
   }
 }

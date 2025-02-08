@@ -10,7 +10,7 @@
     <h2 class="m-2">Lista de Notas</h2>
   </div>
   <p-toolbar>
-    <p-button label="Novo" icon="pi pi-plus" (onClick)="abrirModalCadastro()"></p-button>
+    <p-button label="Novo" icon="pi pi-plus" (click)="abrirModalCadastro()"  size="small"></p-button>
     <ng-template pTemplate="left">
       <p-inputgroup>
         <p-inputgroup-addon>
@@ -126,7 +126,7 @@
                     </div>
                   </ng-template>
                 </p-autoComplete>
-                <p-button icon="pi pi-plus" (onClick)="abrirModalItem()" [disabled]="!produtoSelecionado"></p-button>
+                <p-button icon="pi pi-plus" (click)="abrirModalItem()" [disabled]="!produtoSelecionado"></p-button>
               </div>
             </div>
           </div>
@@ -163,9 +163,9 @@
                 <td>
                   <div class="flex gap-2">
                     <p-button icon="pi pi-pencil" severity="secondary" rounded outlined
-                      (onClick)="editarItem(item)"></p-button>
+                      (click)="editarItem(item)"></p-button>
                     <p-button icon="pi pi-trash" severity="danger" rounded outlined
-                      (onClick)="removerItem(item)"></p-button>
+                      (click)="removerItem(item)"></p-button>
                   </div>
                 </td>
               </tr>
@@ -179,12 +179,17 @@
   </p-card>
 
   <ng-template pTemplate="footer">
-    <div class="flex justify-content-end gap-2">
-      <span class="font-bold">Total: {{50 | currency:'BRL'}}</span>
-      <button pButton label="Cancelar" icon="pi pi-times" class="p-button-secondary" (click)="ocultarModal()">
-      </button>
-      <button pButton label="Salvar" icon="pi pi-check" class="p-button-primary" (click)="salvarNota()">
-      </button>
+    <div class="flex justify-content-between align-items-center">
+      <!-- Totalizador -->
+      <div class="mr-8">
+        <strong>Total:</strong> {{ getTotalValorTotal() | currency:'BRL' }}
+      </div>
+
+      <!-- Botões de ação -->
+      <div class="flex justify-content-end gap-2">
+        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-secondary" (click)="ocultarModal()"></button>
+        <button pButton label="Salvar" icon="pi pi-check" class="p-button-primary" (click)="salvarNota()"></button>
+      </div>
     </div>
   </ng-template>
 </p-dialog>
@@ -221,12 +226,13 @@
       </div>
     </div>
   </form>
-
   <ng-template pTemplate="footer">
     <div class="flex justify-content-end gap-2">
-      <p-button label="Cancelar" icon="pi pi-times" (onClick)="fecharModalItem()" styleClass="p-button-text">
+      <p-button label="Cancelar" icon="pi pi-times" (click)="fecharModalItem()" styleClass="p-button-text">
       </p-button>
-      <p-button label="Adicionar" icon="pi pi-check" (onClick)="salvarItem()" [disabled]="!itemForm.valid">
+      <p-button label="Adicionar" icon="pi pi-check" (click)="salvarItem()" [disabled]="!itemForm.valid">
       </p-button>
     </div>
   </ng-template>
+</p-dialog>
+
