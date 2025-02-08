@@ -1,21 +1,47 @@
 <div class="card">
-  <p-table [value]="fornecedores" [tableStyle]="{'min-width': '50rem'}">
+  <p-toast></p-toast>
+
+  <!-- Toolbar com botões e campo de pesquisa -->
+  <p-toolbar>
+    <p-button label="Novo" icon="pi pi-plus" (onClick)="abrirModalCadastro()"></p-button>
+    <ng-template pTemplate="left">
+      <p-inputgroup>
+        <p-inputgroup-addon>
+          <i class="pi pi-search" (click)="clearSearch()"></i>
+        </p-inputgroup-addon>
+        <input pInputText placeholder="Filtrar Fornecedores" #filter (input)="onGlobalFilter($event)" />
+      </p-inputgroup>
+    </ng-template>
+  </p-toolbar>
+
+  <!-- Tabela de fornecedores -->
+  <p-table #dt [value]="fornecedores" [tableStyle]="{'min-width': '50rem'}"
+    [globalFilterFields]="['nome', 'cnpj', 'email']" responsiveLayout="scroll" [rows]="10" stripedRows>
     <ng-template pTemplate="header">
       <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>CNPJ</th>
+        <th pSortableColumn="id">Código <p-sortIcon field="id"></p-sortIcon></th>
+        <th pSortableColumn="nome">Nome <p-sortIcon field="nome"></p-sortIcon></th>
+        <th pSortableColumn="cnpj">CNPJ <p-sortIcon field="cnpj"></p-sortIcon></th>
         <th>Telefone</th>
         <th>Email</th>
+        <th>Ações</th>
       </tr>
     </ng-template>
+
     <ng-template pTemplate="body" let-fornecedor>
       <tr>
-        <td>{{fornecedor.id}}</td>
-        <td>{{fornecedor.nome}}</td>
-        <td>{{fornecedor.cnpj}}</td>
-        <td>{{fornecedor.telefone}}</td>
-        <td>{{fornecedor.email}}</td>
+        <td>{{ fornecedor.id }}</td>
+        <td>{{ fornecedor.nome }}</td>
+        <td>{{ fornecedor.cnpj }}</td>
+        <td>{{ fornecedor.telefone }}</td>
+        <td>{{ fornecedor.email }}</td>
+        <td>
+          <div class="flex gap-2">
+            <p-button icon="pi pi-pencil" rounded outlined (click)="editarFornecedor(fornecedor)"></p-button>
+            <p-button icon="pi pi-trash" severity="danger" rounded outlined
+              (click)="excluirFornecedor(fornecedor)"></p-button>
+          </div>
+        </td>
       </tr>
     </ng-template>
   </p-table>

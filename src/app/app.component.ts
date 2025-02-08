@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
+import { PrimeNG } from 'primeng/config';
 import { InputTextModule } from 'primeng/inputtext';
 import { Menubar } from 'primeng/menubar';
 
@@ -14,10 +15,14 @@ import { Menubar } from 'primeng/menubar';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+
+  constructor(private primeng: PrimeNG) {}
+
   items: MenuItem[] | undefined;
 
   ngOnInit() {
+    this.primeng.ripple.set(true);
     this.items = [
       {
         label: 'Home',
