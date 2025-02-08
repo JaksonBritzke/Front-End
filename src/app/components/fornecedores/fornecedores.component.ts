@@ -14,6 +14,7 @@ import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { Fornecedor } from '../../model/fornecedor';
 import { FornecedorService } from './fornecedores.service';
+import { CnpjFormatPipe } from '../../shared/pipes/cnpj-format.pipe';
 
 @Component({
   selector: 'app-fornecedores',
@@ -31,6 +32,7 @@ import { FornecedorService } from './fornecedores.service';
     InputIconModule,
     ToolbarModule,
     IconFieldModule,
+    CnpjFormatPipe
   ],
   providers: [MessageService, FornecedorService],
   templateUrl: './fornecedores.component.html',
