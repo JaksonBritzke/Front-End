@@ -6,7 +6,9 @@
 
 <div class="card">
   <p-toast></p-toast>
-
+  <div class="flex justify-content-between align-items-center">
+    <h2 class="m-2">Lista de Notas</h2>
+  </div>
   <p-toolbar>
     <p-button label="Novo" icon="pi pi-plus" (onClick)="abrirModalCadastro()"></p-button>
     <ng-template pTemplate="left">
@@ -21,12 +23,6 @@
   <p-table #dt3 [value]="notaFiscal" [tableStyle]="{'min-width': '50rem'}"
     [globalFilterFields]="['numero', 'dataEmissao', 'valorTotal', 'fornecedor.nome']" responsiveLayout="scroll"
     [rows]="10" stripedRows>
-
-    <ng-template pTemplate="caption">
-      <div class="flex justify-content-between align-items-center">
-        <h5 class="m-0">Lista de Notas Fiscais</h5>
-      </div>
-    </ng-template>
 
     <ng-template pTemplate="header">
       <tr>
@@ -119,18 +115,10 @@
             <div class="field mb-3">
               <label for="produto" class="block font-medium mb-2">Produto</label>
               <div class="flex gap-2">
-                <p-autoComplete
-                  id="produto"
-                  size="small"
-                  [(ngModel)]="produtoDisplay"
-                  [ngModelOptions]="{standalone: true}"
-                  [suggestions]="produtosFiltrados"
-                  (completeMethod)="filtrarProdutos($event)"
-                  field="descricao"
-                  [forceSelection]="true"
-                  [dropdown]="true"
-                  class="custom-autocomplete"
-                  (onSelect)="onProdutoSelect($event)">
+                <p-autoComplete id="produto" size="small" [(ngModel)]="produtoDisplay"
+                  [ngModelOptions]="{standalone: true}" [suggestions]="produtosFiltrados"
+                  (completeMethod)="filtrarProdutos($event)" field="descricao" [forceSelection]="true" [dropdown]="true"
+                  class="custom-autocomplete" (onSelect)="onProdutoSelect($event)">
                   <ng-template let-produto pTemplate="item">
                     <div>
                       {{produto.codigo}} - {{produto.descricao}}
@@ -174,8 +162,10 @@
                 <td>{{item.valorTotal | currency:'BRL'}}</td>
                 <td>
                   <div class="flex gap-2">
-                    <p-button icon="pi pi-pencil" severity="secondary" rounded outlined (onClick)="editarItem(item)"></p-button>
-                    <p-button icon="pi pi-trash" severity="danger" rounded outlined (onClick)="removerItem(item)"></p-button>
+                    <p-button icon="pi pi-pencil" severity="secondary" rounded outlined
+                      (onClick)="editarItem(item)"></p-button>
+                    <p-button icon="pi pi-trash" severity="danger" rounded outlined
+                      (onClick)="removerItem(item)"></p-button>
                   </div>
                 </td>
               </tr>
@@ -203,12 +193,8 @@
 
 
 <!-- Modal de Item -->
-<p-dialog [(visible)]="itemDialog"
-          [modal]="true"
-          [style]="{width: '400px'}"
-          [header]="editandoItem ? 'Editar Item' : 'Adicionar Item'"
-          [draggable]="false"
-          [resizable]="false">
+<p-dialog [(visible)]="itemDialog" [modal]="true" [style]="{width: '400px'}"
+  [header]="editandoItem ? 'Editar Item' : 'Adicionar Item'" [draggable]="false" [resizable]="false">
   <form [formGroup]="itemForm" class="flex flex-column gap-3">
     <div class="field">
       <label class="block font-medium mb-2">Produto</label>
@@ -217,23 +203,14 @@
 
     <div class="field">
       <label for="valorUnitario" class="block font-medium mb-2">Valor Unitário</label>
-      <p-inputNumber
-        formControlName="valorUnitario"
-        mode="currency"
-        currency="BRL"
-        locale="pt-BR"
-        [minFractionDigits]="2"
-        class="w-full">
+      <p-inputNumber formControlName="valorUnitario" mode="currency" currency="BRL" locale="pt-BR"
+        [minFractionDigits]="2" class="w-full">
       </p-inputNumber>
     </div>
 
     <div class="field">
       <label for="quantidade" class="block font-medium mb-2">Quantidade</label>
-      <p-inputNumber
-        formControlName="quantidade"
-        [showButtons]="true"
-        [min]="1"
-        class="w-full">
+      <p-inputNumber formControlName="quantidade" [showButtons]="true" [min]="1" class="w-full">
       </p-inputNumber>
     </div>
 
@@ -247,17 +224,9 @@
 
   <ng-template pTemplate="footer">
     <div class="flex justify-content-end gap-2">
-      <p-button
-        label="Cancelar"
-        icon="pi pi-times"
-        (onClick)="fecharModalItem()"
-        styleClass="p-button-text">
+      <p-button label="Cancelar" icon="pi pi-times" (onClick)="fecharModalItem()" styleClass="p-button-text">
       </p-button>
-      <p-button
-        label="Adicionar"
-        icon="pi pi-check"
-        (onClick)="salvarItem()"
-        [disabled]="!itemForm.valid">
+      <p-button label="Adicionar" icon="pi pi-check" (onClick)="salvarItem()" [disabled]="!itemForm.valid">
       </p-button>
     </div>
   </ng-template>
