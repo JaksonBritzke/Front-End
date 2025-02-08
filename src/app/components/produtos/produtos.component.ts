@@ -60,8 +60,8 @@ import { ProdutoService } from './produtos.service';
     InputIconModule,
     ConfirmDialogModule,
     ToolbarModule,
-    IconFieldModule,
-    CnpjFormatPipe,
+    IconFieldModule
+
   ],
   providers: [MessageService, ProdutoService, ConfirmationService],
   templateUrl: './produtos.component.html',

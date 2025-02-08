@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Produto } from '../../model/produto';
+import { ItemNotaFiscal } from '../../model/ItemNotaFiscal';
 
 const API_URL = environment.apiUrl;
 
@@ -20,8 +21,8 @@ export class ProdutoService {
     return this.http.get<Produto>(`${API_URL}/produtos/${id}`);
   }
 
-  getProdutosByDescricao(descricao: string): Observable<Produto> {
-    return this.http.get<Produto>(`${API_URL}/produtos/descricao/${descricao}`);
+  buscarPorDescricao(descricao: string): Observable<ItemNotaFiscal[]> {
+    return this.http.get<ItemNotaFiscal[]>(`${API_URL}/produtos/descricao/like/${descricao}`);
   }
 
   getProdutosByRazaoSocial(razaoSocial: string): Observable<Produto[]> {

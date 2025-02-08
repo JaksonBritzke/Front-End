@@ -8,10 +8,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
-import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
@@ -23,6 +23,7 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputMaskModule } from 'primeng/inputmask';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { PanelModule } from 'primeng/panel';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -31,8 +32,11 @@ import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { delay } from 'rxjs';
 import { NotaFiscal } from '../../model/NotaFiscal';
+import { Produto } from '../../model/produto';
+import { CnpjFormatPipe } from '../../shared/pipes/cnpj-format.pipe';
+import { FornecedorService } from '../fornecedores/fornecedores.service';
+import { ProdutoService } from '../produtos/produtos.service';
 import { NotaService } from './nota.service';
-import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-nota-fiscal',
@@ -46,6 +50,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
     FormsModule,
     PanelModule,
     InputMaskModule,
+    CnpjFormatPipe,
     DatePickerModule,
     InputTextModule,
     AutoCompleteModule,
@@ -79,20 +84,24 @@ export class NotaFiscalComponent {
   searchTerm: string = '';
   notaForm: FormGroup;
   notaFiscal: NotaFiscal[] = [];
+  produtos: Produto[] = [];
   notaDialog: boolean = false;
   fornecedoresFiltrados: any[] = [];
   produtosFiltrados: any[] = [];
   enderecoFornecedor: string = '';
   produtosSelecionados: any[] = [];
+  fornecedorSelecionado: any = null;
 
   constructor(
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private notaService: NotaService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private produtoService: ProdutoService,
+    private fornecedorService: FornecedorService
   ) {
     this.notaForm = this.fb.group({
-      numero: [null],
+      numero: [null, [Validators.required]],
       dataEmissao: ['', [Validators.required]],
       fornecedorId: [null, [Validators.required]],
       valorTotal: [null, [Validators.required]],
@@ -122,15 +131,36 @@ export class NotaFiscalComponent {
   }
 
   filtrarFornecedor(event: any) {
-    // Implemente a lógica de filtro de fornecedores
     const query = event.query;
-    // Exemplo: this.fornecedoresFiltrados = await this.service.buscarFornecedores(query);
+    if (query) {
+      this.fornecedorService.getFornecedoresByRazaoSocial(query).subscribe({
+        next: (fornecedores) => {
+          // Mapeia os fornecedores para o formato esperado pelo autocomplete
+          this.fornecedoresFiltrados = Array.isArray(fornecedores)
+            ? fornecedores
+            : [fornecedores]; // Caso venha um único objeto, converte para array
+        },
+        error: (error) => {
+          console.error('Erro ao buscar fornecedores:', error);
+          this.fornecedoresFiltrados = [];
+        },
+      });
+    }
   }
 
   filtrarProdutos(event: any) {
-    // Implemente a lógica de filtro de produtos
     const query = event.query;
-    // Exemplo: this.produtosFiltrados = await this.service.buscarProdutos(query);
+    if (query) {
+      this.produtoService.buscarPorDescricao(query).subscribe({
+        next: (produtos) => {
+          this.produtosFiltrados = produtos;
+        },
+        error: (error) => {
+          console.error('Erro ao buscar produtos:', error);
+          this.produtosFiltrados = [];
+        },
+      });
+    }
   }
 
   adicionarProduto() {
@@ -138,7 +168,7 @@ export class NotaFiscalComponent {
     if (produto) {
       const produtoComQuantidade = {
         ...produto,
-        quantidade: 1
+        quantidade: 1,
       };
       this.produtosSelecionados.push(produtoComQuantidade);
       this.notaForm.get('produtoTemp')?.reset();
@@ -146,7 +176,28 @@ export class NotaFiscalComponent {
   }
 
   onFornecedorSelect(event: any) {
-    this.enderecoFornecedor = `${event.endereco}, ${event.numero} - ${event.cidade}/${event.uf}`;
+    if (event && event.value) {
+      this.fornecedorSelecionado = event.value;
+
+      // Armazena o código no formControl, mas mantém a visualização da razão social
+      this.notaForm.get('fornecedorId')?.setValue(event.value.razaoSocial);
+
+      if (event.value.situacao === 'SUSPENSO') {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Atenção',
+          detail: 'Este fornecedor está suspenso no sistema.',
+        });
+        this.limparFornecedor();
+        return;
+      }
+
+      this.notaForm.get('fornecedorId')?.updateValueAndValidity();
+    }
+  }
+  
+  isFornecedorSelecionado(): boolean {
+    return this.fornecedorSelecionado !== null;
   }
 
   removerProduto(produto: any) {
@@ -159,6 +210,8 @@ export class NotaFiscalComponent {
   ocultarModal() {
     this.notaDialog = false;
     this.submitted = false;
+    this.fornecedorSelecionado = null;
+    this.enderecoFornecedor = '';
     this.notaForm.reset();
     this.produtosSelecionados = [];
   }
@@ -228,10 +281,32 @@ export class NotaFiscalComponent {
   }
 
   abrirModalCadastro() {
+    this.carregarProdutos();
     this.notaForm.reset();
     this.submitted = false;
     this.notaDialog = true;
   }
+
+  carregarProdutos() {
+    this.produtoService.getProdutos().subscribe({
+      next: (data) => {
+        this.produtos = data;
+      },
+      error: (err) => {
+        console.error('Erro ao carregar produtos', err);
+      },
+    });
+  }
+
+  adicionar(produto: any) {}
+
+  limparFornecedor() {
+    this.fornecedorSelecionado = null;
+    this.notaForm.patchValue({
+      fornecedorId: null,
+    });
+  }
+
   onGlobalFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dt3.filterGlobal(filterValue, 'contains');
