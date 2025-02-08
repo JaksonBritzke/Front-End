@@ -133,10 +133,8 @@
                   (onSelect)="onProdutoSelect($event)">
                   <ng-template let-produto pTemplate="item">
                     <div>
-                      {{produto.descricao}}
-                      <div class="text-sm text-500">
-                        Código: {{produto.codigo}} - Preço: {{produto.preco | currency:'BRL'}}
-                      </div>
+                      {{produto.codigo}} - {{produto.descricao}}
+
                     </div>
                   </ng-template>
                 </p-autoComplete>
@@ -205,8 +203,12 @@
 
 
 <!-- Modal de Item -->
-<p-dialog [(visible)]="itemDialog" [modal]="true" [style]="{width: '450px'}"
-  [header]="editandoItem ? 'Editar Item' : 'Novo Item'" [draggable]="false" [resizable]="false">
+<p-dialog [(visible)]="itemDialog"
+          [modal]="true"
+          [style]="{width: '400px'}"
+          [header]="editandoItem ? 'Editar Item' : 'Adicionar Item'"
+          [draggable]="false"
+          [resizable]="false">
   <form [formGroup]="itemForm" class="flex flex-column gap-3">
     <div class="field">
       <label class="block font-medium mb-2">Produto</label>
@@ -216,35 +218,46 @@
     <div class="field">
       <label for="valorUnitario" class="block font-medium mb-2">Valor Unitário</label>
       <p-inputNumber
-        id="valorUnitario"
         formControlName="valorUnitario"
         mode="currency"
         currency="BRL"
         locale="pt-BR"
         [minFractionDigits]="2"
-        [maxFractionDigits]="2"
-        [showButtons]="false"
-        [allowEmpty]="false"
-        (onInput)="calcularTotal()"
         class="w-full">
       </p-inputNumber>
     </div>
 
     <div class="field">
       <label for="quantidade" class="block font-medium mb-2">Quantidade</label>
-      <p-inputNumber id="quantidade" formControlName="quantidade"
-        [showButtons]="true" [min]="1" class="w-full"
-        (onInput)="calcularTotal()"></p-inputNumber>
+      <p-inputNumber
+        formControlName="quantidade"
+        [showButtons]="true"
+        [min]="1"
+        class="w-full">
+      </p-inputNumber>
     </div>
 
     <div class="field">
       <label class="block font-medium mb-2">Valor Total</label>
-      <div class="text-lg">{{itemForm.get('valorTotal')?.value | currency:'BRL'}}</div>
+      <div class="text-lg font-bold">
+        {{calcularTotalItem() | currency:'BRL'}}
+      </div>
     </div>
   </form>
 
   <ng-template pTemplate="footer">
-    <p-button label="Cancelar" icon="pi pi-times" (onClick)="fecharModalItem()" styleClass="p-button-text"></p-button>
-    <p-button label="Salvar" icon="pi pi-check" (onClick)="salvarItem()" [disabled]="!itemForm.valid"></p-button>
+    <div class="flex justify-content-end gap-2">
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        (onClick)="fecharModalItem()"
+        styleClass="p-button-text">
+      </p-button>
+      <p-button
+        label="Adicionar"
+        icon="pi pi-check"
+        (onClick)="salvarItem()"
+        [disabled]="!itemForm.valid">
+      </p-button>
+    </div>
   </ng-template>
-</p-dialog>

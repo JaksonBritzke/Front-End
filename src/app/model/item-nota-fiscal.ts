@@ -1,5 +1,5 @@
 export interface ItemNotaFiscal {
-  id: number;
+  id: number | null;
   produtoId: number;
   valorUnitario: number;
   quantidade: number;

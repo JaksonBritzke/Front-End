@@ -31,13 +31,14 @@ import { Table, TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { delay } from 'rxjs';
-import { ItemNotaFiscal } from '../../model/ItemNotaFiscal';
-import { NotaFiscal } from '../../model/NotaFiscal';
 import { Produto } from '../../model/produto';
 import { CnpjFormatPipe } from '../../shared/pipes/cnpj-format.pipe';
 import { FornecedorService } from '../fornecedores/fornecedores.service';
 import { ProdutoService } from '../produtos/produtos.service';
 import { NotaService } from './nota.service';
+import { ItemNotaFiscal } from '../../model/item-nota-fiscal';
+import { NotaFiscal } from '../../model/NotaFiscal';
+import { ItemNotaFiscalView } from '../../model/item-nota-fiscal-view';
 
 @Component({
   selector: 'app-nota-fiscal',
@@ -83,6 +84,8 @@ export class NotaFiscalComponent {
   loading: boolean = false;
   submitted: boolean = false;
   searchTerm: string = '';
+  editandoItem: boolean = false;
+  itemEmEdicao: ItemNotaFiscalView | null = null;
   notaForm: FormGroup;
   notaFiscal: NotaFiscal[] = [];
   produtos: Produto[] = [];
@@ -97,8 +100,6 @@ export class NotaFiscalComponent {
   itemDialog: boolean = false;
   itemForm: FormGroup;
   itensNotaFiscal: ItemNotaFiscal[] = [];
-  editandoItem: boolean = false;
-  itemEmEdicao: ItemNotaFiscal | null = null;
   produtoDisplay: any;
 
   constructor(
@@ -118,9 +119,8 @@ export class NotaFiscalComponent {
     });
 
     this.itemForm = this.fb.group({
-      valorUnitario: [null, [Validators.required, Validators.min(0.01)]],
       quantidade: [1, [Validators.required, Validators.min(1)]],
-      valorTotal: [{ value: null, disabled: true }],
+      valorUnitario: [0, [Validators.required, Validators.min(0.01)]]
     });
   }
   ngOnInit(): void {
@@ -368,25 +368,27 @@ export class NotaFiscalComponent {
   onProdutoSelect(event: any) {
     if (event && event.value) {
       this.produtoSelecionado = event.value;
-      this.produtoDisplay = event.value.descricao;
+      this.produtoDisplay = event.value.codigo + '-' + event.value.descricao;
     }
   }
 
   abrirModalItem() {
+    if (!this.produtoSelecionado) return;
+
     this.itemDialog = true;
-    this.editandoItem = false;
-    this.itemForm.reset();
     this.itemForm.patchValue({
       valorUnitario: this.produtoSelecionado?.preco || 0,
-      quantidade: 1,
+      quantidade: 1
     });
-    this.calcularTotal();
   }
 
   fecharModalItem() {
     this.itemDialog = false;
     this.itemForm.reset();
+    this.editandoItem = false;
     this.itemEmEdicao = null;
+    this.produtoSelecionado = null;
+    this.produtoDisplay = '';
   }
 
   calcularTotal() {
@@ -396,49 +398,57 @@ export class NotaFiscalComponent {
     this.itemForm.patchValue({ valorTotal });
   }
 
+  calcularTotalItem(): number {
+    const quantidade = this.itemForm.get('quantidade')?.value || 0;
+    const valorUnitario = this.itemForm.get('valorUnitario')?.value || 0;
+    return quantidade * valorUnitario;
+  }
+
   salvarItem() {
     if (this.itemForm.valid && this.produtoSelecionado) {
-      const novoItem: ItemNotaFiscal = {
-        id: this.itemEmEdicao?.id || 0,
-        produtoId: this.produtoSelecionado.codigo,
-        valorUnitario: this.itemForm.get('valorUnitario')?.value,
-        quantidade: this.itemForm.get('quantidade')?.value,
-        valorTotal: this.itemForm.get('valorTotal')?.value,
-        produto: this.produtoSelecionado, // para exibição na tabela
-      };
+      const quantidade = this.itemForm.get('quantidade')?.value;
+      const valorUnitario = this.itemForm.get('valorUnitario')?.value;
+      const valorTotal = quantidade * valorUnitario;
 
       if (this.editandoItem && this.itemEmEdicao) {
-        // Atualiza item existente
-        const index = this.itensNotaFiscal.findIndex(
-          (item) => item.id === this.itemEmEdicao?.id
-        );
+        // Atualiza o item existente
+        const index = this.itensNotaFiscal.findIndex(item => item === this.itemEmEdicao);
         if (index !== -1) {
-          this.itensNotaFiscal[index] = novoItem;
+          this.itensNotaFiscal[index] = {
+            ...this.itemEmEdicao,
+            quantidade,
+            valorUnitario,
+            valorTotal
+          };
         }
       } else {
-        // Adiciona novo item
+        // Cria um novo item
+        const novoItem: ItemNotaFiscalView = {
+          id: 0,
+          produtoId: this.produtoSelecionado.codigo,
+          produto: this.produtoSelecionado,
+          quantidade,
+          valorUnitario,
+          valorTotal
+        };
         this.itensNotaFiscal.push(novoItem);
       }
 
       this.atualizarValorTotal();
       this.fecharModalItem();
-      this.produtoSelecionado = null;
-      this.produtoDisplay = '';
     }
   }
 
-  editarItem(item: ItemNotaFiscal) {
-    this.itemEmEdicao = item;
+  editarItem(item: ItemNotaFiscalView) {
     this.editandoItem = true;
-    this.produtoSelecionado = item.produtoId;
+    this.itemEmEdicao = item;
+    this.produtoSelecionado = item.produto;
+    this.itemDialog = true;
 
     this.itemForm.patchValue({
-      valorUnitario: item.valorUnitario,
       quantidade: item.quantidade,
-      valorTotal: item.valorTotal,
+      valorUnitario: item.valorUnitario
     });
-
-    this.itemDialog = true;
   }
 
   removerItem(item: ItemNotaFiscal) {
@@ -453,7 +463,7 @@ export class NotaFiscalComponent {
 
   atualizarValorTotal() {
     const valorTotal = this.itensNotaFiscal.reduce(
-      (total, item) => total + item.valorTotal,
+      (total, item) => total + (item.quantidade * item.valorUnitario),
       0
     );
     this.notaForm.patchValue({ valorTotal });

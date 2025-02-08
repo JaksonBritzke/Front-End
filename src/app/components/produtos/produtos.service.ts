@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Produto } from '../../model/produto';
-import { ItemNotaFiscal } from '../../model/ItemNotaFiscal';
+import { ItemNotaFiscal } from '../../model/item-nota-fiscal';
 
 const API_URL = environment.apiUrl;
 

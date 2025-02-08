@@ -1,4 +1,4 @@
-import { ItemNotaFiscal } from "./ItemNotaFiscal";
+import { ItemNotaFiscal } from './item-nota-fiscal';
 
 export interface NotaFiscal {
   id: number;
