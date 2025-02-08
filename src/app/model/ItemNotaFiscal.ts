@@ -4,4 +4,5 @@ export interface ItemNotaFiscal {
   valorUnitario: number;
   quantidade: number;
   valorTotal: number;
+  produto?: any;
 }

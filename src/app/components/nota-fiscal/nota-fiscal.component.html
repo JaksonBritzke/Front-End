@@ -70,8 +70,8 @@
           <div class="col-5">
             <div class="field mb-3">
               <label for="numero1" class="block font-medium mb-2">Nro Nota</label>
-              <p-inputNumber id="numero1" formControlName="numero" [showButtons]="false" size="small" class="w-full" autofocus
-              [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('fornecedorId')?.invalid}">
+              <p-inputNumber id="numero1" formControlName="numero" [showButtons]="false" size="small" class="w-full"
+                autofocus [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('fornecedorId')?.invalid}">
               </p-inputNumber>
               <small class="p-error block mt-2" *ngIf="submitted && notaForm.get('numero')?.invalid">
                 Número da nota é obrigatório
@@ -93,33 +93,55 @@
           </div>
         </div>
         <div class="grid">
-          <!-- Fornecedor Autocomplete -->
           <div class="col-12">
             <div class="field mb-3">
               <label for="fornecedor" class="block font-medium mb-2">Fornecedor</label>
-              <p-autoComplete
-              id="fornecedor"
-              size="small"
-              [(ngModel)]="fornecedorDisplay"
-              [ngModelOptions]="{standalone: true}"
-              [suggestions]="fornecedoresFiltrados"
-              (completeMethod)="filtrarFornecedor($event)"
-              field="razaoSocial"
-              [forceSelection]="true"
-              [dropdown]="true"
-              styleClass="w-full"
-              [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('fornecedorId')?.invalid}"
-              (onSelect)="onFornecedorSelect($event)">
-              <ng-template let-fornecedor pTemplate="item">
+              <p-autoComplete id="fornecedor" size="small" [(ngModel)]="fornecedorDisplay"
+                [ngModelOptions]="{standalone: true}" [suggestions]="fornecedoresFiltrados"
+                (completeMethod)="filtrarFornecedor($event)" field="razaoSocial" [forceSelection]="true"
+                [dropdown]="true" styleClass="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('fornecedorId')?.invalid}"
+                (onSelect)="onFornecedorSelect($event)">
+                <ng-template let-fornecedor pTemplate="item">
                   <div>
-                      {{fornecedor.razaoSocial}} - {{fornecedor.cnpj | cnpjFormat}}
-                      <div class="text-sm text-500">{{fornecedor.endereco}}</div>
+                    {{fornecedor.razaoSocial}} - {{fornecedor.cnpj | cnpjFormat}}
+                    <div class="text-sm text-500">{{fornecedor.endereco}}</div>
                   </div>
-              </ng-template>
-          </p-autoComplete>
+                </ng-template>
+              </p-autoComplete>
               <small class="p-error block mt-2" *ngIf="submitted && notaForm.get('fornecedorId')?.invalid">
                 Fornecedor é obrigatório
               </small>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="field mb-3">
+              <label for="produto" class="block font-medium mb-2">Produto</label>
+              <div class="flex gap-2">
+                <p-autoComplete
+                  id="produto"
+                  size="small"
+                  [(ngModel)]="produtoDisplay"
+                  [ngModelOptions]="{standalone: true}"
+                  [suggestions]="produtosFiltrados"
+                  (completeMethod)="filtrarProdutos($event)"
+                  field="descricao"
+                  [forceSelection]="true"
+                  [dropdown]="true"
+                  class="custom-autocomplete"
+                  (onSelect)="onProdutoSelect($event)">
+                  <ng-template let-produto pTemplate="item">
+                    <div>
+                      {{produto.descricao}}
+                      <div class="text-sm text-500">
+                        Código: {{produto.codigo}} - Preço: {{produto.preco | currency:'BRL'}}
+                      </div>
+                    </div>
+                  </ng-template>
+                </p-autoComplete>
+                <p-button icon="pi pi-plus" (onClick)="abrirModalItem()" [disabled]="!produtoSelecionado"></p-button>
+              </div>
             </div>
           </div>
         </div>
@@ -130,44 +152,32 @@
       <!-- Lado Direito -->
       <div class="col-6 pl-3">
         <p-panel>
-          <ng-template pTemplate="header">
+          <!-- <ng-template pTemplate="header">
             <div class="flex align-items-center justify-content-between w-full">
               <span>Adicione os Itens</span>
             </div>
-          </ng-template>
+          </ng-template> -->
 
-          <div class="grid mb-3">
-            <div class="col-12">
-              <p-autoComplete formControlName="itens" size="small" [suggestions]="produtosFiltrados"
-                (completeMethod)="filtrarProdutos($event)" field="nome" [dropdown]="true" styleClass="w-full"
-                placeholder="Pesquisar produto">
-                <ng-template let-produto pTemplate="item">
-                  <div>{{produto.nome}} - R$ {{produto.preco}}</div>
-                </ng-template>
-              </p-autoComplete>
-            </div>
-
-          </div>
-
-          <p-table [scrollable]="true" #dt2 [value]="produtos" responsiveLayout="scroll">
-
+          <p-table [value]="itensNotaFiscal" [tableStyle]="{'min-width': '50rem'}">
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="codigo">Código <p-sortIcon field="codigo"></p-sortIcon></th>
-                <th pSortableColumn="descricao">Descrição <p-sortIcon field="descricao"></p-sortIcon></th>
-                <th>Adicionar</th>
+                <th>Produto</th>
+                <th>Valor Unitário</th>
+                <th>Quantidade</th>
+                <th>Valor Total</th>
+                <th>Ações</th>
               </tr>
             </ng-template>
-
-            <ng-template pTemplate="body" let-produto>
+            <ng-template pTemplate="body" let-item>
               <tr>
-                <td>{{ produto.codigo }}</td>
-                <td>{{ produto.descricao }}</td>
+                <td>{{item.produto.descricao}}</td>
+                <td>{{item.valorUnitario | currency:'BRL'}}</td>
+                <td>{{item.quantidade}}</td>
+                <td>{{item.valorTotal | currency:'BRL'}}</td>
                 <td>
                   <div class="flex gap-2">
-                    <p-button icon="pi pi-pencil" rounded outlined (click)="adicionar(produto)">
-                    </p-button>
-
+                    <p-button icon="pi pi-pencil" severity="secondary" rounded outlined (onClick)="editarItem(item)"></p-button>
+                    <p-button icon="pi pi-trash" severity="danger" rounded outlined (onClick)="removerItem(item)"></p-button>
                   </div>
                 </td>
               </tr>
@@ -192,3 +202,49 @@
 </p-dialog>
 <p-confirmDialog header="Confirmação" icon="pi pi-exclamation-triangle" acceptLabel="Sim" rejectLabel="Não">
 </p-confirmDialog>
+
+
+<!-- Modal de Item -->
+<p-dialog [(visible)]="itemDialog" [modal]="true" [style]="{width: '450px'}"
+  [header]="editandoItem ? 'Editar Item' : 'Novo Item'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="itemForm" class="flex flex-column gap-3">
+    <div class="field">
+      <label class="block font-medium mb-2">Produto</label>
+      <div class="text-lg">{{produtoSelecionado?.descricao}}</div>
+    </div>
+
+    <div class="field">
+      <label for="valorUnitario" class="block font-medium mb-2">Valor Unitário</label>
+      <p-inputNumber
+        id="valorUnitario"
+        formControlName="valorUnitario"
+        mode="currency"
+        currency="BRL"
+        locale="pt-BR"
+        [minFractionDigits]="2"
+        [maxFractionDigits]="2"
+        [showButtons]="false"
+        [allowEmpty]="false"
+        (onInput)="calcularTotal()"
+        class="w-full">
+      </p-inputNumber>
+    </div>
+
+    <div class="field">
+      <label for="quantidade" class="block font-medium mb-2">Quantidade</label>
+      <p-inputNumber id="quantidade" formControlName="quantidade"
+        [showButtons]="true" [min]="1" class="w-full"
+        (onInput)="calcularTotal()"></p-inputNumber>
+    </div>
+
+    <div class="field">
+      <label class="block font-medium mb-2">Valor Total</label>
+      <div class="text-lg">{{itemForm.get('valorTotal')?.value | currency:'BRL'}}</div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" icon="pi pi-times" (onClick)="fecharModalItem()" styleClass="p-button-text"></p-button>
+    <p-button label="Salvar" icon="pi pi-check" (onClick)="salvarItem()" [disabled]="!itemForm.valid"></p-button>
+  </ng-template>
+</p-dialog>

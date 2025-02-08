@@ -31,6 +31,7 @@ import { Table, TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { delay } from 'rxjs';
+import { ItemNotaFiscal } from '../../model/ItemNotaFiscal';
 import { NotaFiscal } from '../../model/NotaFiscal';
 import { Produto } from '../../model/produto';
 import { CnpjFormatPipe } from '../../shared/pipes/cnpj-format.pipe';
@@ -92,6 +93,13 @@ export class NotaFiscalComponent {
   enderecoFornecedor: string = '';
   produtosSelecionados: any[] = [];
   fornecedorSelecionado: any = null;
+  produtoSelecionado: any;
+  itemDialog: boolean = false;
+  itemForm: FormGroup;
+  itensNotaFiscal: ItemNotaFiscal[] = [];
+  editandoItem: boolean = false;
+  itemEmEdicao: ItemNotaFiscal | null = null;
+  produtoDisplay: any;
 
   constructor(
     private messageService: MessageService,
@@ -108,6 +116,12 @@ export class NotaFiscalComponent {
       valorTotal: [null, [Validators.required]],
       itens: [null, [Validators.required]],
     });
+
+    this.itemForm = this.fb.group({
+      valorUnitario: [null, [Validators.required, Validators.min(0.01)]],
+      quantidade: [1, [Validators.required, Validators.min(1)]],
+      valorTotal: [{ value: null, disabled: true }],
+    });
   }
   ngOnInit(): void {
     this.carregarNotas();
@@ -118,7 +132,7 @@ export class NotaFiscalComponent {
     // Simulando um delay para verificar o loading
     this.notaService
       .getNotas()
-      .pipe(delay(1000))
+      .pipe(delay(500))
       .subscribe({
         next: (data) => {
           this.notaFiscal = data;
@@ -133,13 +147,22 @@ export class NotaFiscalComponent {
 
   filtrarFornecedor(event: any) {
     const query = event.query;
-    if (query) {
+    if (!query) {
+      this.fornecedorService.getFornecedores().subscribe({
+        next: (fornecedores) => {
+          this.fornecedoresFiltrados = fornecedores;
+        },
+        error: (error) => {
+          console.error('Erro ao buscar fornecedores:', error);
+          this.fornecedoresFiltrados = [];
+        },
+      });
+    } else {
       this.fornecedorService.getFornecedoresByRazaoSocial(query).subscribe({
         next: (fornecedores) => {
-          // Mapeia os fornecedores para o formato esperado pelo autocomplete
           this.fornecedoresFiltrados = Array.isArray(fornecedores)
             ? fornecedores
-            : [fornecedores]; // Caso venha um único objeto, converte para array
+            : [fornecedores];
         },
         error: (error) => {
           console.error('Erro ao buscar fornecedores:', error);
@@ -151,7 +174,18 @@ export class NotaFiscalComponent {
 
   filtrarProdutos(event: any) {
     const query = event.query;
-    if (query) {
+
+    if (!query) {
+      this.produtoService.getProdutos().subscribe({
+        next: (produtos) => {
+          this.produtosFiltrados = produtos;
+        },
+        error: (error) => {
+          console.error('Erro ao buscar produtos:', error);
+          this.produtosFiltrados = [];
+        },
+      });
+    } else {
       this.produtoService.buscarPorDescricao(query).subscribe({
         next: (produtos) => {
           this.produtosFiltrados = produtos;
@@ -162,6 +196,14 @@ export class NotaFiscalComponent {
         },
       });
     }
+  }
+
+  limparProduto() {
+    this.produtoSelecionado = null;
+    this.produtoDisplay = '';
+    this.notaForm.patchValue({
+      produtoId: null,
+    });
   }
 
   adicionarProduto() {
@@ -185,14 +227,14 @@ export class NotaFiscalComponent {
 
       // Atualiza o form com o código
       this.notaForm.patchValue({
-        fornecedorId: event.value.codigo
+        fornecedorId: event.value.codigo,
       });
 
       if (event.value.situacao === 'SUSPENSO') {
         this.messageService.add({
           severity: 'warn',
           summary: 'Atenção',
-          detail: 'Este fornecedor está suspenso no sistema.'
+          detail: 'Este fornecedor está suspenso no sistema.',
         });
         this.limparFornecedor();
         return;
@@ -287,7 +329,6 @@ export class NotaFiscalComponent {
   }
 
   abrirModalCadastro() {
-    this.carregarProdutos();
     this.notaForm.reset();
     this.submitted = false;
     this.notaDialog = true;
@@ -310,7 +351,7 @@ export class NotaFiscalComponent {
     this.fornecedorSelecionado = null;
     this.fornecedorDisplay = '';
     this.notaForm.patchValue({
-      fornecedorId: null
+      fornecedorId: null,
     });
   }
 
@@ -322,5 +363,99 @@ export class NotaFiscalComponent {
   clearSearch() {
     this.searchTerm = '';
     this.dt3.filterGlobal(this.searchTerm, 'contains');
+  }
+
+  onProdutoSelect(event: any) {
+    if (event && event.value) {
+      this.produtoSelecionado = event.value;
+      this.produtoDisplay = event.value.descricao;
+    }
+  }
+
+  abrirModalItem() {
+    this.itemDialog = true;
+    this.editandoItem = false;
+    this.itemForm.reset();
+    this.itemForm.patchValue({
+      valorUnitario: this.produtoSelecionado?.preco || 0,
+      quantidade: 1,
+    });
+    this.calcularTotal();
+  }
+
+  fecharModalItem() {
+    this.itemDialog = false;
+    this.itemForm.reset();
+    this.itemEmEdicao = null;
+  }
+
+  calcularTotal() {
+    const valorUnitario = this.itemForm.get('valorUnitario')?.value || 0;
+    const quantidade = this.itemForm.get('quantidade')?.value || 0;
+    const valorTotal = valorUnitario * quantidade;
+    this.itemForm.patchValue({ valorTotal });
+  }
+
+  salvarItem() {
+    if (this.itemForm.valid && this.produtoSelecionado) {
+      const novoItem: ItemNotaFiscal = {
+        id: this.itemEmEdicao?.id || 0,
+        produtoId: this.produtoSelecionado.codigo,
+        valorUnitario: this.itemForm.get('valorUnitario')?.value,
+        quantidade: this.itemForm.get('quantidade')?.value,
+        valorTotal: this.itemForm.get('valorTotal')?.value,
+        produto: this.produtoSelecionado, // para exibição na tabela
+      };
+
+      if (this.editandoItem && this.itemEmEdicao) {
+        // Atualiza item existente
+        const index = this.itensNotaFiscal.findIndex(
+          (item) => item.id === this.itemEmEdicao?.id
+        );
+        if (index !== -1) {
+          this.itensNotaFiscal[index] = novoItem;
+        }
+      } else {
+        // Adiciona novo item
+        this.itensNotaFiscal.push(novoItem);
+      }
+
+      this.atualizarValorTotal();
+      this.fecharModalItem();
+      this.produtoSelecionado = null;
+      this.produtoDisplay = '';
+    }
+  }
+
+  editarItem(item: ItemNotaFiscal) {
+    this.itemEmEdicao = item;
+    this.editandoItem = true;
+    this.produtoSelecionado = item.produtoId;
+
+    this.itemForm.patchValue({
+      valorUnitario: item.valorUnitario,
+      quantidade: item.quantidade,
+      valorTotal: item.valorTotal,
+    });
+
+    this.itemDialog = true;
+  }
+
+  removerItem(item: ItemNotaFiscal) {
+    this.confirmationService.confirm({
+      message: 'Deseja realmente remover este item?',
+      accept: () => {
+        this.itensNotaFiscal = this.itensNotaFiscal.filter((i) => i !== item);
+        this.atualizarValorTotal();
+      },
+    });
+  }
+
+  atualizarValorTotal() {
+    const valorTotal = this.itensNotaFiscal.reduce(
+      (total, item) => total + item.valorTotal,
+      0
+    );
+    this.notaForm.patchValue({ valorTotal });
   }
 }

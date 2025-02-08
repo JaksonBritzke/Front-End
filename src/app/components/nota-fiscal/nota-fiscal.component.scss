@@ -14,3 +14,12 @@
   position: relative;
   z-index: 1000; /* Garante que o spinner esteja acima da camada do contêiner */
 }
+
+/* No seu arquivo de estilos (ex: styles.css ou component.css) */
+:host ::ng-deep .custom-autocomplete .p-autocomplete {
+  width: 500px; /* ou o tamanho desejado */
+}
+
+:host ::ng-deep .custom-autocomplete .p-autocomplete-input {
+  width: 100%;
+}
