@@ -110,7 +110,16 @@ export class FornecedoresComponent implements OnInit {
   }
 
   editarFornecedor(fornecedor: Fornecedor) {
-    console.log('Editar fornecedor', fornecedor);
+   // Clona o objeto para evitar referência direta
+   const fornecedorEdit = { ...fornecedor };
+
+   if (fornecedorEdit.dataBaixa) {
+     fornecedorEdit.dataBaixa = new Date(fornecedorEdit.dataBaixa);
+   }
+
+   this.fornecedorForm.patchValue(fornecedorEdit);
+
+   this.fornecedorDialog = true;
   }
 
   excluirFornecedor(fornecedor: Fornecedor) {
