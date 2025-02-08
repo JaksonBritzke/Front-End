@@ -95,7 +95,7 @@ export class ProdutosComponent implements OnInit {
     this.carregarProdutos();
   }
 
-  carregarProdutos(): void {
+  carregarProdutos() {
     this.produtoService.getProdutos().subscribe({
       next: (data) => {
         this.produtos = data;

@@ -1,7 +1,11 @@
+import { ItemNotaFiscal } from "./ItemNotaFiscal";
+
 export interface NotaFiscal {
-  numero: string;
-  data: Date;
-  fornecedor: string;
-  valor: number;
+  id: number;
+  numero: number;
+  dataEmissao: Date;
+  fornecedorId: number;
+  valorTotal: number;
   status: string;
+  itens: ItemNotaFiscal[];
 }
