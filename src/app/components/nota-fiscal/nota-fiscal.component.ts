@@ -284,7 +284,7 @@ export class NotaFiscalComponent {
           this.messageService.add({
             severity: 'success',
             summary: 'Sucesso',
-            detail: 'Produto atualizado com sucesso',
+            detail: 'Nota atualizada com sucesso',
           });
           this.carregarNotas();
           this.ocultarModal();
@@ -293,7 +293,7 @@ export class NotaFiscalComponent {
           this.messageService.add({
             severity: 'error',
             summary: 'Erro',
-            detail: 'Erro ao atualizar produto',
+            detail: 'Erro ao atualizar a NF',
           });
         },
       });
@@ -304,7 +304,7 @@ export class NotaFiscalComponent {
           this.messageService.add({
             severity: 'success',
             summary: 'Sucesso',
-            detail: 'Produto cadastrado com sucesso',
+            detail: 'NF cadastrada com sucesso',
           });
           this.carregarNotas();
           this.ocultarModal();
@@ -336,7 +336,7 @@ export class NotaFiscalComponent {
         this.produtos = data;
       },
       error: (err) => {
-        console.error('Erro ao carregar produtos', err);
+        this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
       },
     });
   }
