@@ -1,7 +1,7 @@
 import { Produto } from './produto';
 
 export interface ItemNotaFiscalView {
-  id: number;
+  id: any;
   produtoId: number;
   valorUnitario: number;
   quantidade: number;

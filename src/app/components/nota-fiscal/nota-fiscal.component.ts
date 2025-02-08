@@ -309,12 +309,8 @@ export class NotaFiscalComponent {
           this.carregarNotas();
           this.ocultarModal();
         },
-        error: (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: 'Erro ao cadastrar produto',
-          });
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
         },
       });
     }
@@ -415,24 +411,39 @@ export class NotaFiscalComponent {
         const index = this.itensNotaFiscal.findIndex(item => item === this.itemEmEdicao);
         if (index !== -1) {
           this.itensNotaFiscal[index] = {
-            ...this.itemEmEdicao,
-            quantidade,
-            valorUnitario,
-            valorTotal
+            id: null,
+            produtoId: this.produtoSelecionado.codigo,
+            valorUnitario: valorUnitario,
+            quantidade: quantidade,
+            valorTotal: valorTotal,
+            produto: this.produtoSelecionado // mantemos para exibição na tabela
           };
         }
       } else {
         // Cria um novo item
         const novoItem: ItemNotaFiscalView = {
-          id: 0,
+          id: null,
           produtoId: this.produtoSelecionado.codigo,
-          produto: this.produtoSelecionado,
-          quantidade,
-          valorUnitario,
-          valorTotal
+          valorUnitario: valorUnitario,
+          quantidade: quantidade,
+          valorTotal: valorTotal,
+          produto: this.produtoSelecionado // mantemos para exibição na tabela
         };
         this.itensNotaFiscal.push(novoItem);
       }
+
+      // Atualiza o form da nota com os itens no formato correto
+      const itensParaAPI = this.itensNotaFiscal.map(item => ({
+        id: item.id,
+        produtoId: item.produtoId,
+        valorUnitario: item.valorUnitario,
+        quantidade: item.quantidade,
+        valorTotal: item.valorTotal
+      }));
+
+      this.notaForm.patchValue({
+        itens: itensParaAPI
+      });
 
       this.atualizarValorTotal();
       this.fecharModalItem();
