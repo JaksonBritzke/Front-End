@@ -1,18 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MenuItem, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { IconFieldModule } from 'primeng/iconfield';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputIconModule } from 'primeng/inputicon';
 import { PanelModule } from 'primeng/panel';
 import { Table, TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { Fornecedor } from '../../model/fornecedor';
-import { InputGroupModule } from 'primeng/inputgroup';
-import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { FornecedorService } from './fornecedores.service';
 
 @Component({
   selector: 'app-fornecedores',
@@ -31,7 +32,7 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
     ToolbarModule,
     IconFieldModule,
   ],
-  providers: [MessageService],
+  providers: [MessageService, FornecedorService],
   templateUrl: './fornecedores.component.html',
   styleUrl: './fornecedores.component.scss',
 })
@@ -39,26 +40,24 @@ export class FornecedoresComponent implements OnInit {
   @ViewChild('dt') dt!: Table;
   @ViewChild('filter') filter!: ElementRef;
   searchTerm: string = '';
-  fornecedores: Fornecedor[] = [
-    {
-      id: 1,
-      nome: 'Fornecedor A',
-      cnpj: '12.345.678/0001-90',
-      telefone: '(11) 1234-5678',
-      email: 'fornecedora@email.com',
-    },
-    {
-      id: 2,
-      nome: 'Fornecedor B',
-      cnpj: '98.765.432/0001-10',
-      telefone: '(11) 8765-4321',
-      email: 'fornecedorb@email.com',
-    },
-  ];
+  fornecedores: Fornecedor[] = [];
 
-  ngOnInit() {
+  constructor(private fornecedorService: FornecedorService) {}
+
+  ngOnInit(): void {
+    this.carregarFornecedores();
   }
 
+  carregarFornecedores(): void {
+    this.fornecedorService.getFornecedores().subscribe({
+      next: (data) => {
+        this.fornecedores = data;
+      },
+      error: (err) => {
+        console.error('Erro ao carregar fornecedores', err);
+      },
+    });
+  }
 
   editarFornecedor(fornecedor: Fornecedor) {
     console.log('Editar fornecedor', fornecedor);

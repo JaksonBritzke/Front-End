@@ -1,7 +1,13 @@
+import { SituacaoFornecedor } from './enum/situacao-fornecedor';
+
 export interface Fornecedor {
-  id: number;
+  codigo: number;
+  razaoSocial: string;
   nome: string;
-  cnpj: string;
-  telefone: string;
   email: string;
+  endereco: string;
+  telefone: string;
+  cnpj: string;
+  situacao: SituacaoFornecedor;
+  dataBaixa: Date;
 }

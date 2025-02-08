@@ -2,6 +2,7 @@ import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import Material from '@primeng/themes/material';
+import { provideHttpClient } from '@angular/common/http';
 import { routes } from './app.routes';
 import {
   provideClientHydration,
@@ -14,11 +15,12 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-          preset: Material
-      }
-  }),
+        preset: Material,
+      },
+    }),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
+    provideHttpClient(), // Adicione o provideHttpClient aqui
   ],
 };
