@@ -8,8 +8,8 @@ import { CnpjFormatPipe } from '../../shared/pipes/cnpj-format.pipe';
 import { PRIMENG_IMPORTS } from '../../shared/primeng.imports';
 import { SHARED_IMPORTS } from '../../shared/shared.imports';
 import { FornecedorService } from './fornecedores.service';
-import { TelefonePipe } from '../../shared/pipes/telefone-format-pipe';
 import { delay } from 'rxjs';
+import { TelefonePipe } from '../../shared/pipes/telefone-format.pipe';
 
 @Component({
   selector: 'app-fornecedores',

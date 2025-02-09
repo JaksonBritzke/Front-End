@@ -20,14 +20,14 @@
           <i class="pi pi-search" (click)="clearSearch()"></i>
         </p-inputgroup-addon>
         <input pInputText placeholder="Filtrar Notas Fiscais" #filter (input)="onGlobalFilter($event)" size="small"
-          pTooltip="Digite a razão social, fornecedor, código ou CNPJ" tooltipPosition="top" />
+          pTooltip="Digite Numero da Nota ou CNPJ" tooltipPosition="top" />
       </p-inputgroup>
     </ng-template>
   </p-toolbar>
 
   <!-- Notes Table -->
   <p-table #dt3 [value]="notaFiscal" [tableStyle]="{'min-width': '50rem'}"
-    [globalFilterFields]="['numero', 'dataEmissao', 'valorTotal', 'fornecedorNome']" responsiveLayout="scroll"
+    [globalFilterFields]="['numero', 'valorTotal', 'fornecedorNome']" responsiveLayout="scroll"
     [rows]="10" stripedRows>
     <ng-template pTemplate="header">
       <tr>
@@ -43,7 +43,7 @@
         <td>{{ notaFiscal.numero }}</td>
         <td>{{ notaFiscal.dataEmissao | date:'dd/MM/yyyy' }}</td>
         <td>{{ notaFiscal.fornecedorId }} - {{ notaFiscal.fornecedorNome }}</td>
-        <td>{{ notaFiscal.valorTotal | currency:'BRL' }}</td>
+        <td>{{ notaFiscal.valorTotal | formatCurrency  }}</td>
         <td>
           <div class="flex gap-2">
             <p-button icon="pi pi-pencil" rounded outlined (click)="editarNotaFiscal(notaFiscal)"></p-button>
@@ -142,8 +142,8 @@
               <ng-template pTemplate="header">
                 <tr>
                   <th>Produto</th>
-                  <th>Valor Unitário</th>
                   <th>Quantidade</th>
+                  <th>Valor Unitário</th>
                   <th>Valor Total</th>
                   <th>Ações</th>
                 </tr>
@@ -175,7 +175,7 @@
   <ng-template pTemplate="footer">
     <div class="flex justify-content-between align-items-center">
       <div class="mr-8">
-        <strong>Total:</strong> {{ getTotalValorTotal() | currency:'BRL' }}
+        <strong>Total:</strong> {{ getTotalValorTotal() | formatCurrency }}
       </div>
       <div class="flex justify-content-end gap-2">
         <button pButton label="Cancelar" icon="pi pi-times" class="p-button-secondary" size="small"
@@ -216,7 +216,7 @@
     <div class="field">
       <label class="block font-medium mb-2">Valor Total</label>
       <div class="text-lg font-bold">
-        {{calcularTotalItem() | currency:'BRL'}}
+        {{calcularTotalItem() | formatCurrency}}
       </div>
     </div>
   </form>
