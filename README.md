@@ -43,7 +43,8 @@ ou
 ng serve
 ```
 
-A aplicação estará disponível em `http://localhost:4200/` - Lemnre-se é necessário o BackEnd Rodando na Porta 8080
+A aplicação estará disponível em `http://localhost:4200/` - Lembre-se é necessário o BackEnd Rodando na Porta 8080
+https://github.com/JaksonBritzke/back-end.git
 
 ## Bibliotecas principais
 
