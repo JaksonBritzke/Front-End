@@ -36,8 +36,8 @@ export class FornecedorService {
     return this.http.post<Fornecedor>(`${API_URL}/fornecedor`, fornecedor);
   }
 
-  updateFornecedor(id: number, fornecedor: Fornecedor): Observable<Fornecedor> {
-    return this.http.put<Fornecedor>(`${API_URL}/fornecedor/${id}`, fornecedor);
+  updateFornecedor(fornecedor: Fornecedor): Observable<Fornecedor> {
+    return this.http.put<Fornecedor>(`${API_URL}/fornecedor/`, fornecedor);
   }
 
   deleteFornecedor(id: number): Observable<void> {

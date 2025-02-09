@@ -11,4 +11,20 @@ body, .p-component {
   font-size: 14px; // Ajuste conforme necessário
 }
 
+// Spinner
+.spinner-container {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center;     /* Centraliza verticalmente */
+  position: fixed;         /* Fixa a posição na tela */
+  top: 50%;                /* Centraliza verticalmente a partir do meio da tela */
+  left: 50%;               /* Centraliza horizontalmente a partir do meio da tela */
+  transform: translate(-50%, -50%); /* Ajusta para que o spinner fique no centro exato */
+  background-color: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente (opcional) */
+  z-index: 999;            /* Garante que o spinner fique acima de elementos abaixo, mas abaixo do menubar */
+}
 
+.spinner-container > p-progress-spinner {
+  position: relative;
+  z-index: 1000; /* Garante que o spinner esteja acima da camada do contêiner */
+}

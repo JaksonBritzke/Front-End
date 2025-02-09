@@ -1,3 +1,8 @@
+<!-- Loading Spinner -->
+<div class="spinner-container" *ngIf="loading">
+  <p-progress-spinner strokeWidth="8" fill="transparent" animationDuration=".5s"
+    [style]="{ width: '50px', height: '50px' }"></p-progress-spinner>
+</div>
 <div class="card">
   <p-toast></p-toast>
   <div class="flex justify-content-between align-items-center">
@@ -10,30 +15,24 @@
         <p-inputgroup-addon>
           <i class="pi pi-search" (click)="clearSearch()"></i>
         </p-inputgroup-addon>
-        <input pInputText placeholder="Filtrar Fornecedores" #filter (input)="onGlobalFilter($event)" />
+        <input pInputText placeholder="Buscar" #filter (input)="onGlobalFilter($event)"
+          pTooltip="Digite a razão social, código ou CNPJ" tooltipPosition="top" />
       </p-inputgroup>
     </ng-template>
   </p-toolbar>
 
-  <p-table
-    #dt
-    [value]="fornecedores"
-    [tableStyle]="{'min-width': '50rem'}"
-    [globalFilterFields]="['nome', 'cnpj', 'email']"
-    responsiveLayout="scroll"
-    [rows]="5"
-    [paginator]="true"
-    [rowsPerPageOptions]="[5,10,25,50]"
-    [showCurrentPageReport]="true"
-    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-    stripedRows>
+  <p-table #dt [value]="fornecedores" [tableStyle]="{'min-width': '50rem'}"
+    [globalFilterFields]="['razaoSocial', 'cnpj', 'codigo']" responsiveLayout="scroll" [rows]="5" [paginator]="true"
+    [rowsPerPageOptions]="[5,10,25,50]" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros" stripedRows>
 
     <ng-template pTemplate="header">
       <tr>
-        <th pSortableColumn="id">Código <p-sortIcon field="id"></p-sortIcon></th>
-        <th pSortableColumn="nome">Nome <p-sortIcon field="nome"></p-sortIcon></th>
+        <th pSortableColumn="codigo">Código <p-sortIcon field="codigo"></p-sortIcon></th>
+        <th pSortableColumn="razaoSocial">Razão Social <p-sortIcon field="razaoSocial"></p-sortIcon></th>
         <th pSortableColumn="cnpj">CNPJ <p-sortIcon field="cnpj"></p-sortIcon></th>
         <th>Telefone</th>
+        <th>Endereço</th>
         <th>Email</th>
         <th>Ações</th>
       </tr>
@@ -44,7 +43,8 @@
         <td>{{ fornecedor.codigo }}</td>
         <td>{{ fornecedor.razaoSocial }}</td>
         <td>{{ fornecedor.cnpj | cnpjFormat}}</td>
-        <td>{{ fornecedor.telefone }}</td>
+        <td>{{ fornecedor.endereco  }}</td>
+        <td>{{ fornecedor.telefone | telefone }}</td>
         <td>{{ fornecedor.email }}</td>
         <td>
           <div class="flex gap-2">
@@ -87,7 +87,7 @@
 
       <div class="field col-12">
         <label for="endereco" class="block font-medium mb-2">Endereço</label>
-        <input pInputText id="razaoSocial" formControlName="endereco" class="w-full"
+        <input pInputText id="endereco" formControlName="endereco" class="w-full"
           [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('endereco')?.invalid}">
         <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('endereco')?.invalid">
           Endereço é obrigatório

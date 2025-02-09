@@ -31,14 +31,14 @@ import { Table, TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { delay } from 'rxjs';
+import { ItemNotaFiscal } from '../../model/item-nota-fiscal';
+import { ItemNotaFiscalView } from '../../model/item-nota-fiscal-view';
+import { NotaFiscal } from '../../model/nota-fiscal';
 import { Produto } from '../../model/produto';
 import { CnpjFormatPipe } from '../../shared/pipes/cnpj-format.pipe';
 import { FornecedorService } from '../fornecedores/fornecedores.service';
 import { ProdutoService } from '../produtos/produtos.service';
 import { NotaService } from './nota.service';
-import { ItemNotaFiscal } from '../../model/item-nota-fiscal';
-import { ItemNotaFiscalView } from '../../model/item-nota-fiscal-view';
-import { NotaFiscal } from '../../model/nota-fiscal';
 
 @Component({
   selector: 'app-nota-fiscal',
@@ -123,7 +123,7 @@ export class NotaFiscalComponent {
 
     this.itemForm = this.fb.group({
       quantidade: [1, [Validators.required, Validators.min(1)]],
-      valorUnitario: [0, [Validators.required, Validators.min(0.01)]]
+      valorUnitario: [0, [Validators.required, Validators.min(0.01)]],
     });
   }
   ngOnInit(): void {
@@ -132,12 +132,13 @@ export class NotaFiscalComponent {
 
   carregarNotas() {
     this.loading = true;
-    // Simulando um delay para verificar o loading
+    // Delay apenas para simimular
     this.notaService
       .getNotas()
       .pipe(delay(500))
       .subscribe({
         next: (data) => {
+          console.log(data);
           this.notaFiscal = data;
           this.loading = false;
         },
@@ -267,7 +268,7 @@ export class NotaFiscalComponent {
 
     this.notaForm.reset({
       fornecedorId: null,
-      itens: []
+      itens: [],
     });
 
     this.itensNotaFiscal = [];
@@ -287,7 +288,7 @@ export class NotaFiscalComponent {
 
     const notaFiscal: NotaFiscal = {
       ...this.notaForm.value,
-      fornecedorId: this.fornecedorSelecionado?.codigo
+      fornecedorId: this.fornecedorSelecionado?.codigo,
     };
 
     if (notaFiscal.id) {
@@ -302,7 +303,11 @@ export class NotaFiscalComponent {
           this.ocultarModal();
         },
         error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Atenção',
+            detail: err.error,
+          });
         },
       });
     } else {
@@ -318,7 +323,11 @@ export class NotaFiscalComponent {
           this.ocultarModal();
         },
         error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Atenção',
+            detail: err.error,
+          });
         },
       });
     }
@@ -328,31 +337,32 @@ export class NotaFiscalComponent {
     this.editando = true;
     this.notaDialog = true;
 
-    // Carregar dados da nota no formulário
     this.notaForm.patchValue({
       id: notaFiscal.id,
       numero: notaFiscal.numero,
       dataEmissao: new Date(notaFiscal.dataEmissao),
       fornecedorId: notaFiscal.fornecedorId,
       valorTotal: notaFiscal.valorTotal,
-      itens: notaFiscal.itens
+      itens: notaFiscal.itens,
     });
 
     // Carregar fornecedor
-    this.fornecedorService.getFornecedorById(notaFiscal.fornecedorId).subscribe({
-      next: (fornecedor) => {
-        this.fornecedorSelecionado = fornecedor;
-        this.fornecedorDisplay = fornecedor.razaoSocial;
-      }
-    });
+    this.fornecedorService
+      .getFornecedorById(notaFiscal.fornecedorId)
+      .subscribe({
+        next: (fornecedor) => {
+          this.fornecedorSelecionado = fornecedor;
+          this.fornecedorDisplay = fornecedor.razaoSocial;
+        },
+      });
 
     // Carregar itens
-    this.itensNotaFiscal = notaFiscal.itens.map(item=> {
+    this.itensNotaFiscal = notaFiscal.itens.map((item) => {
       // Carregar dados do produto para cada item
       this.produtoService.getProdutosById(item.produtoId).subscribe({
         next: (produto) => {
           item['produto'] = produto; // Adicionando produto para exibição na tabela
-        }
+        },
       });
       return item;
     });
@@ -372,7 +382,11 @@ export class NotaFiscalComponent {
             this.carregarNotas();
           },
           error: (err) => {
-            this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Atenção',
+              detail: err.error,
+            });
           },
         });
       },
@@ -391,7 +405,11 @@ export class NotaFiscalComponent {
         this.produtos = data;
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Atenção',
+          detail: err.error,
+        });
       },
     });
   }
@@ -423,14 +441,13 @@ export class NotaFiscalComponent {
     }
   }
 
-
   abrirModalItem() {
     if (!this.produtoSelecionado) return;
 
     this.itemDialog = true;
     this.itemForm.patchValue({
       valorUnitario: this.produtoSelecionado?.preco || 0,
-      quantidade: 1
+      quantidade: 1,
     });
 
     // Usando um delay maior e detectando mudanças
@@ -476,7 +493,9 @@ export class NotaFiscalComponent {
 
       if (this.editandoItem && this.itemEmEdicao) {
         // Atualiza o item existente
-        const index = this.itensNotaFiscal.findIndex(item => item === this.itemEmEdicao);
+        const index = this.itensNotaFiscal.findIndex(
+          (item) => item === this.itemEmEdicao
+        );
         if (index !== -1) {
           this.itensNotaFiscal[index] = {
             id: null,
@@ -484,7 +503,7 @@ export class NotaFiscalComponent {
             valorUnitario: valorUnitario,
             quantidade: quantidade,
             valorTotal: valorTotal,
-            produto: this.produtoSelecionado // mantemos para exibição na tabela
+            produto: this.produtoSelecionado, // mantemos para exibição na tabela
           };
         }
       } else {
@@ -495,22 +514,22 @@ export class NotaFiscalComponent {
           valorUnitario: valorUnitario,
           quantidade: quantidade,
           valorTotal: valorTotal,
-          produto: this.produtoSelecionado // mantemos para exibição na tabela
+          produto: this.produtoSelecionado, // mantemos para exibição na tabela
         };
         this.itensNotaFiscal.push(novoItem);
       }
 
       // Atualiza o form da nota com os itens no formato correto
-      const itensParaAPI = this.itensNotaFiscal.map(item => ({
+      const itensParaAPI = this.itensNotaFiscal.map((item) => ({
         id: item.id,
         produtoId: item.produtoId,
         valorUnitario: item.valorUnitario,
         quantidade: item.quantidade,
-        valorTotal: item.valorTotal
+        valorTotal: item.valorTotal,
       }));
 
       this.notaForm.patchValue({
-        itens: itensParaAPI
+        itens: itensParaAPI,
       });
 
       this.atualizarValorTotal();
@@ -526,28 +545,28 @@ export class NotaFiscalComponent {
 
     this.itemForm.patchValue({
       quantidade: item.quantidade,
-      valorUnitario: item.valorUnitario
+      valorUnitario: item.valorUnitario,
     });
   }
 
-// Atualizar a assinatura do método para aceitar ItemNotaFiscalView
-removerItem(item: ItemNotaFiscalView) {
-  this.confirmationService.confirm({
-    message: 'Deseja realmente remover este item?',
-    accept: () => {
-      this.itensNotaFiscal = this.itensNotaFiscal.filter((i) => i !== item);
+  // Atualizar a assinatura do método para aceitar ItemNotaFiscalView
+  removerItem(item: ItemNotaFiscalView) {
+    this.confirmationService.confirm({
+      message: 'Deseja realmente remover este item?',
+      accept: () => {
+        this.itensNotaFiscal = this.itensNotaFiscal.filter((i) => i !== item);
 
-      this.notaForm.patchValue({
-        itens: this.itensNotaFiscal
-      });
-      this.atualizarValorTotal();
-    },
-  });
-}
+        this.notaForm.patchValue({
+          itens: this.itensNotaFiscal,
+        });
+        this.atualizarValorTotal();
+      },
+    });
+  }
 
   atualizarValorTotal() {
     const valorTotal = this.itensNotaFiscal.reduce(
-      (total, item) => total + (item.quantidade * item.valorUnitario),
+      (total, item) => total + item.quantidade * item.valorUnitario,
       0
     );
     this.notaForm.patchValue({ valorTotal });
@@ -560,6 +579,9 @@ removerItem(item: ItemNotaFiscalView) {
   }
 
   getTotalValorTotal(): number {
-    return this.itensNotaFiscal.reduce((total, nota) => total + nota.valorTotal, 0);
+    return this.itensNotaFiscal.reduce(
+      (total, nota) => total + nota.valorTotal,
+      0
+    );
   }
 }

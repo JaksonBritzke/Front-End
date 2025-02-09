@@ -1,68 +1,20 @@
-import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { CalendarModule } from 'primeng/calendar';
-import { CardModule } from 'primeng/card';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { DatePickerModule } from 'primeng/datepicker';
-import { DialogModule } from 'primeng/dialog';
-import { DividerModule } from 'primeng/divider';
-import { DropdownModule } from 'primeng/dropdown';
-import { IconFieldModule } from 'primeng/iconfield';
-import { IftaLabelModule } from 'primeng/iftalabel';
-import { InputGroupModule } from 'primeng/inputgroup';
-import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { InputIconModule } from 'primeng/inputicon';
-import { InputMaskModule } from 'primeng/inputmask';
-import { InputTextModule } from 'primeng/inputtext';
-import { PanelModule } from 'primeng/panel';
-import { Table, TableModule } from 'primeng/table';
-import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
+import { Table } from 'primeng/table';
 import { SituacaoFornecedor } from '../../model/enum/situacao-fornecedor';
 import { Fornecedor } from '../../model/fornecedor';
 import { CnpjFormatPipe } from '../../shared/pipes/cnpj-format.pipe';
+import { PRIMENG_IMPORTS } from '../../shared/primeng.imports';
+import { SHARED_IMPORTS } from '../../shared/shared.imports';
 import { FornecedorService } from './fornecedores.service';
+import { TelefonePipe } from '../../shared/pipes/telefone-format-pipe';
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-fornecedores',
   standalone: true,
-  imports: [
-    TableModule,
-    CommonModule,
-    InputTextModule,
-    DividerModule,
-    FormsModule,
-    PanelModule,
-    InputMaskModule,
-    DatePickerModule,
-    InputTextModule,
-    InputGroupModule,
-    InputGroupAddonModule,
-    ReactiveFormsModule,
-    DropdownModule,
-    IftaLabelModule,
-    CalendarModule,
-    FormsModule,
-    ButtonModule,
-    DialogModule,
-    ToolbarModule,
-    CardModule,
-    ToastModule,
-    InputIconModule,
-    ConfirmDialogModule,
-    ToolbarModule,
-    IconFieldModule,
-    CnpjFormatPipe,
-  ],
+  imports: [...SHARED_IMPORTS, ...PRIMENG_IMPORTS, CnpjFormatPipe, TelefonePipe],
   providers: [MessageService, FornecedorService, ConfirmationService],
   templateUrl: './fornecedores.component.html',
   styleUrl: './fornecedores.component.scss',
@@ -80,6 +32,7 @@ export class FornecedoresComponent implements OnInit {
     { label: 'Suspenso', value: SituacaoFornecedor.SUSPENSO },
   ];
   submitted: boolean = false;
+  loading = false;
   constructor(
     private fornecedorService: FornecedorService,
     private messageService: MessageService,
@@ -102,12 +55,20 @@ export class FornecedoresComponent implements OnInit {
   }
 
   carregarFornecedores(): void {
-    this.fornecedorService.getFornecedores().subscribe({
+    this.loading = true;
+    // Delay apenas para simimular
+    this.fornecedorService.getFornecedores().pipe(delay(200)).subscribe({
       next: (data) => {
         this.fornecedores = data;
+        this.loading = false;
       },
       error: (err) => {
-        console.error('Erro ao carregar fornecedores', err);
+        this.loading = false;
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Ops',
+          detail: 'Tente novamente mais tarde.',
+        });
       },
     });
   }
@@ -139,7 +100,11 @@ export class FornecedoresComponent implements OnInit {
             this.carregarFornecedores();
           },
           error: (err) => {
-            this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Atenção',
+              detail: err.error,
+            });
           },
         });
       },
@@ -177,9 +142,8 @@ export class FornecedoresComponent implements OnInit {
     }
 
     if (fornecedor.codigo) {
-      // Atualização - Note o uso do codigo como primeiro parâmetro
       this.fornecedorService
-        .updateFornecedor(fornecedor.codigo, fornecedor)
+        .updateFornecedor(fornecedor)
         .subscribe({
           next: (response) => {
             this.messageService.add({
@@ -199,7 +163,6 @@ export class FornecedoresComponent implements OnInit {
           },
         });
     } else {
-      // Novo cadastro
       this.fornecedorService.createFornecedor(fornecedor).subscribe({
         next: (response) => {
           this.messageService.add({
@@ -211,7 +174,11 @@ export class FornecedoresComponent implements OnInit {
           this.ocultarModal();
         },
         error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Atenção',
+            detail: err.error,
+          });
         },
       });
     }

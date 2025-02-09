@@ -26,7 +26,7 @@
 
   <!-- Notes Table -->
   <p-table #dt3 [value]="notaFiscal" [tableStyle]="{'min-width': '50rem'}"
-    [globalFilterFields]="['numero', 'dataEmissao', 'valorTotal', 'fornecedor.nome']"
+    [globalFilterFields]="['numero', 'dataEmissao', 'valorTotal', 'fornecedorId']"
     responsiveLayout="scroll" [rows]="10" stripedRows>
     <ng-template pTemplate="header">
       <tr>
