@@ -1,59 +1,66 @@
-# FrontEnd
+# Projeto Front-end Angular 19
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.6.
+**Importante**: Esta aplicação depende do Backend desenvolvido em Quarkus estar em execução(Projeto com nomenclatura Back-End).
 
-## Development server
+Este projeto foi desenvolvido utilizando Angular 19 e PrimeNG 19 como biblioteca de componentes UI.
 
-To start a local development server, run:
+## Pré-requisitos
+
+Antes de começar, certifique-se de ter instalado em sua máquina:
+
+- Node.js (Recomendada a versão LTS mais recente)
+- NPM (Node Package Manager)
+- Angular CLI versão 19.1.6 ou superior
+
+Para instalar o Angular CLI globalmente, execute:
+
+```bash
+npm install -g @angular/cli
+```
+
+## Instalação
+
+1. Clone o repositório do projeto
+https://github.com/JaksonBritzke/Front-End.git
+2. Navegue até a pasta do projeto
+3. Instale as dependências executando:
+
+```bash
+npm install
+```
+
+## Executando a aplicação
+
+Para iniciar o servidor de desenvolvimento:
+
+```bash
+npm start
+```
+
+ou
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+A aplicação estará disponível em `http://localhost:4200/` - Lemnre-se é necessário o BackEnd Rodando na Porta 8080
 
-## Code scaffolding
+## Bibliotecas principais
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+O projeto utiliza as seguintes bibliotecas principais:
 
-```bash
-ng generate component component-name
-```
+- Angular 19.1.0
+- PrimeNG 19.0.6
+- PrimeFlex 3.3.1
+- PrimeIcons 7.0.0
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Desenvolvimento
 
-```bash
-ng generate --help
-```
+A aplicação está configurada com:
 
-## Building
+- TypeScript 5.7.2
+- RxJS 7.8.0
+- Suporte a SSR (Server-Side Rendering)
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+*Observação: Certifique-se de manter todas as dependências atualizadas para garantir a melhor compatibilidade e segurança.*
