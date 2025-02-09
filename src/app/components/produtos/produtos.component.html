@@ -61,7 +61,7 @@
     <form [formGroup]="produtoForm" class="formgrid grid">
       <div class="field col-12">
         <label for="descricao" class="block font-medium mb-2">Descrição</label>
-        <input pInputText id="descricao" formControlName="descricao" class="w-full"
+        <input pInputText id="descricao" formControlName="descricao" class="w-full" autocomplete="off"
           [ngClass]="{'ng-invalid ng-dirty': submitted && produtoForm.get('descricao')?.invalid}">
         <small class="p-error block mt-2" *ngIf="submitted && produtoForm.get('descricao')?.invalid">
           Descrição é obrigatória

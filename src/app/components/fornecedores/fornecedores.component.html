@@ -66,7 +66,7 @@
     <form [formGroup]="fornecedorForm" class="formgrid grid">
       <div class="field col-12 md:col-6">
         <label for="razaoSocial" class="block font-medium mb-2">Razão Social</label>
-        <input pInputText id="razaoSocial" formControlName="razaoSocial" class="w-full"
+        <input pInputText id="razaoSocial" formControlName="razaoSocial" class="w-full" autocomplete="off"
           [ngClass]="{'ng-invalid ng-dirty': submitted && fornecedorForm.get('razaoSocial')?.invalid}">
         <small class="p-error block mt-2" *ngIf="submitted && fornecedorForm.get('razaoSocial')?.invalid">
           Razão Social é obrigatória
