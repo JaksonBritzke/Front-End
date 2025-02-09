@@ -115,21 +115,33 @@
           </p-panel>
         </div>
 
-        <!-- Product Section -->
         <div class="col-12">
           <p-panel header="Produto" styleClass="mb-3">
-            <div class="flex gap-2">
-              <p-autoComplete id="produto" [(ngModel)]="produtoDisplay"
-                [ngModelOptions]="{standalone: true}" [suggestions]="produtosFiltrados"
-                (completeMethod)="filtrarProdutos($event)" field="descricao" [forceSelection]="true" size="small"
-                [dropdown]="true"  (onSelect)="onProdutoSelect($event)">
+            <div class="p-inputgroup w-full gap-2">
+              <p-autoComplete
+                id="produto"
+                [(ngModel)]="produtoDisplay"
+                [ngModelOptions]="{standalone: true}"
+                [suggestions]="produtosFiltrados"
+                (completeMethod)="filtrarProdutos($event)"
+                field="descricao"
+                [forceSelection]="true"
+                [dropdown]="true"
+                (onSelect)="onProdutoSelect($event)"
+                class="w-full"
+                [style]="{'width': '100%'}"
+              >
                 <ng-template let-produto pTemplate="item">
                   <div>
                     {{produto.codigo}} - {{produto.descricao}}
                   </div>
                 </ng-template>
               </p-autoComplete>
-              <p-button icon="pi pi-plus" (click)="abrirModalItem()" [disabled]="!produtoSelecionado"></p-button>
+              <p-button
+                icon="pi pi-plus"
+                (click)="abrirModalItem()"
+                [disabled]="!produtoSelecionado"
+              ></p-button>
             </div>
           </p-panel>
         </div>
