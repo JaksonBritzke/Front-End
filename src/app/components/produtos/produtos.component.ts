@@ -1,68 +1,22 @@
-import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+  Validators
 } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { CalendarModule } from 'primeng/calendar';
-import { CardModule } from 'primeng/card';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { DatePickerModule } from 'primeng/datepicker';
-import { DialogModule } from 'primeng/dialog';
-import { DividerModule } from 'primeng/divider';
-import { DropdownModule } from 'primeng/dropdown';
-import { IconFieldModule } from 'primeng/iconfield';
-import { IftaLabelModule } from 'primeng/iftalabel';
-import { InputGroupModule } from 'primeng/inputgroup';
-import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { InputIconModule } from 'primeng/inputicon';
-import { InputMaskModule } from 'primeng/inputmask';
-import { InputTextModule } from 'primeng/inputtext';
-import { PanelModule } from 'primeng/panel';
-import { Table, TableModule } from 'primeng/table';
-import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
+import { Table } from 'primeng/table';
+import { delay } from 'rxjs';
 import { SituacaoProduto } from '../../model/enum/situacao-produto.';
 import { Produto } from '../../model/produto';
-import { CnpjFormatPipe } from '../../shared/pipes/cnpj-format.pipe';
+import { PRIMENG_IMPORTS } from '../../shared/primeng.imports';
+import { SHARED_IMPORTS } from '../../shared/shared.imports';
 import { ProdutoService } from './produtos.service';
 
 @Component({
   selector: 'app-produtos',
   standalone: true,
-  imports: [
-    TableModule,
-    CommonModule,
-    InputTextModule,
-    DividerModule,
-    FormsModule,
-    PanelModule,
-    InputMaskModule,
-    DatePickerModule,
-    InputTextModule,
-    InputGroupModule,
-    InputGroupAddonModule,
-    ReactiveFormsModule,
-    DropdownModule,
-    IftaLabelModule,
-    CalendarModule,
-    FormsModule,
-    ButtonModule,
-    DialogModule,
-    ToolbarModule,
-    CardModule,
-    ToastModule,
-    InputIconModule,
-    ConfirmDialogModule,
-    ToolbarModule,
-    IconFieldModule
-
-  ],
+  imports: [...SHARED_IMPORTS, ...PRIMENG_IMPORTS],
   providers: [MessageService, ProdutoService, ConfirmationService],
   templateUrl: './produtos.component.html',
   styleUrl: './produtos.component.scss',
@@ -79,6 +33,7 @@ export class ProdutosComponent implements OnInit {
     { label: 'Inativo', value: SituacaoProduto.INATIVO },
   ];
   submitted: boolean = false;
+  loading = false;
   constructor(
     private produtoService: ProdutoService,
     private messageService: MessageService,
@@ -96,14 +51,19 @@ export class ProdutosComponent implements OnInit {
   }
 
   carregarProdutos() {
-    this.produtoService.getProdutos().subscribe({
-      next: (data) => {
-        this.produtos = data;
-      },
-      error: (err) => {
-        console.error('Erro ao carregar produtos', err);
-      },
-    });
+    this.loading = true;
+    this.produtoService
+      .getProdutos()
+      .pipe(delay(500))
+      .subscribe({
+        next: (data) => {
+          this.produtos = data;
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Erro ao carregar produtos', err);
+        },
+      });
   }
 
   editarProduto(produto: Produto) {
@@ -127,7 +87,11 @@ export class ProdutosComponent implements OnInit {
             this.carregarProdutos();
           },
           error: (err) => {
-            this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Atenção',
+              detail: err.error,
+            });
           },
         });
       },
