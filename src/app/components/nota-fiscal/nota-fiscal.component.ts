@@ -37,8 +37,8 @@ import { FornecedorService } from '../fornecedores/fornecedores.service';
 import { ProdutoService } from '../produtos/produtos.service';
 import { NotaService } from './nota.service';
 import { ItemNotaFiscal } from '../../model/item-nota-fiscal';
-import { NotaFiscal } from '../../model/NotaFiscal';
 import { ItemNotaFiscalView } from '../../model/item-nota-fiscal-view';
+import { NotaFiscal } from '../../model/nota-fiscal';
 
 @Component({
   selector: 'app-nota-fiscal',
@@ -82,6 +82,7 @@ export class NotaFiscalComponent {
   @ViewChild('dt3') dt3!: Table;
   @ViewChild('filter') filter!: ElementRef;
   loading: boolean = false;
+  editando: boolean = false;
   submitted: boolean = false;
   searchTerm: string = '';
   editandoItem: boolean = false;
@@ -111,6 +112,7 @@ export class NotaFiscalComponent {
     private fornecedorService: FornecedorService
   ) {
     this.notaForm = this.fb.group({
+      id: [null],
       numero: [null, [Validators.required]],
       dataEmissao: ['', [Validators.required]],
       fornecedorId: [null, [Validators.required]],
@@ -258,10 +260,16 @@ export class NotaFiscalComponent {
   ocultarModal() {
     this.notaDialog = false;
     this.submitted = false;
+    this.editando = false;
     this.fornecedorSelecionado = null;
     this.enderecoFornecedor = '';
-    this.notaForm.reset();
-    this.produtosSelecionados = [];
+
+    this.notaForm.reset({
+      fornecedorId: null,
+      itens: []
+    });
+
+    this.itensNotaFiscal = [];
   }
 
   salvarNota() {
@@ -276,7 +284,10 @@ export class NotaFiscalComponent {
       return;
     }
 
-    const notaFiscal: NotaFiscal = { ...this.notaForm.value };
+    const notaFiscal: NotaFiscal = {
+      ...this.notaForm.value,
+      fornecedorId: this.fornecedorSelecionado?.codigo
+    };
 
     if (notaFiscal.id) {
       this.notaService.updateNota(notaFiscal).subscribe({
@@ -289,12 +300,8 @@ export class NotaFiscalComponent {
           this.carregarNotas();
           this.ocultarModal();
         },
-        error: (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: 'Erro ao atualizar a NF',
-          });
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
         },
       });
     } else {
@@ -317,11 +324,58 @@ export class NotaFiscalComponent {
   }
 
   editarNotaFiscal(notaFiscal: NotaFiscal) {
-    console.log('Editar notaFiscal', notaFiscal);
+    this.editando = true;
+    this.notaDialog = true;
+
+    // Carregar dados da nota no formulário
+    this.notaForm.patchValue({
+      id: notaFiscal.id,
+      numero: notaFiscal.numero,
+      dataEmissao: new Date(notaFiscal.dataEmissao),
+      fornecedorId: notaFiscal.fornecedorId,
+      valorTotal: notaFiscal.valorTotal,
+      itens: notaFiscal.itens
+    });
+
+    // Carregar fornecedor
+    this.fornecedorService.getFornecedorById(notaFiscal.fornecedorId).subscribe({
+      next: (fornecedor) => {
+        this.fornecedorSelecionado = fornecedor;
+        this.fornecedorDisplay = fornecedor.razaoSocial;
+      }
+    });
+
+    // Carregar itens
+    this.itensNotaFiscal = notaFiscal.itens.map(item=> {
+      // Carregar dados do produto para cada item
+      this.produtoService.getProdutosById(item.produtoId).subscribe({
+        next: (produto) => {
+          item['produto'] = produto; // Adicionando produto para exibição na tabela
+        }
+      });
+      return item;
+    });
   }
 
-  excluirNotaFiscal(notaFiscal: NotaFiscal) {
-    console.log('Excluir notaFiscal', notaFiscal);
+  excluirNotaFiscal(nota: NotaFiscal) {
+    this.confirmationService.confirm({
+      message: `Deseja realmente excluir a nota ${nota.numero}?`,
+      accept: () => {
+        this.notaService.deleteNota(nota.numero).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Sucesso',
+              detail: 'Nota excluída com sucesso',
+            });
+            this.carregarNotas();
+          },
+          error: (err) => {
+            this.messageService.add({ severity: 'error', summary: 'Atenção', detail: err.error });
+          },
+        });
+      },
+    });
   }
 
   abrirModalCadastro() {

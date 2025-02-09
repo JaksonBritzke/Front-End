@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { NotaFiscal } from '../../model/NotaFiscal';
+import { NotaFiscal } from '../../model/nota-fiscal';
 
 const API_URL = environment.apiUrl;
 
