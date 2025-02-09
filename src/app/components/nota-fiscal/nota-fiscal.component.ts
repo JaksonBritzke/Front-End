@@ -1,41 +1,15 @@
-import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { AutoCompleteModule } from 'primeng/autocomplete';
-import { ButtonModule } from 'primeng/button';
-import { CalendarModule } from 'primeng/calendar';
-import { CardModule } from 'primeng/card';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { DatePickerModule } from 'primeng/datepicker';
-import { DialogModule } from 'primeng/dialog';
-import { DividerModule } from 'primeng/divider';
-import { DropdownModule } from 'primeng/dropdown';
-import { IconFieldModule } from 'primeng/iconfield';
-import { IftaLabelModule } from 'primeng/iftalabel';
-import { InputGroupModule } from 'primeng/inputgroup';
-import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { InputIconModule } from 'primeng/inputicon';
-import { InputMaskModule } from 'primeng/inputmask';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
-import { PanelModule } from 'primeng/panel';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { Table, TableModule } from 'primeng/table';
-import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
+import { Table } from 'primeng/table';
 import { delay } from 'rxjs';
 import { ItemNotaFiscal } from '../../model/item-nota-fiscal';
 import { ItemNotaFiscalView } from '../../model/item-nota-fiscal-view';
 import { NotaFiscal } from '../../model/nota-fiscal';
 import { Produto } from '../../model/produto';
 import { CnpjFormatPipe } from '../../shared/pipes/cnpj-format.pipe';
+import { PRIMENG_IMPORTS } from '../../shared/primeng.imports';
+import { SHARED_IMPORTS } from '../../shared/shared.imports';
 import { FornecedorService } from '../fornecedores/fornecedores.service';
 import { ProdutoService } from '../produtos/produtos.service';
 import { NotaService } from './nota.service';
@@ -43,37 +17,7 @@ import { NotaService } from './nota.service';
 @Component({
   selector: 'app-nota-fiscal',
   standalone: true,
-  imports: [
-    TableModule,
-    CommonModule,
-    InputTextModule,
-    ProgressSpinnerModule,
-    DividerModule,
-    FormsModule,
-    PanelModule,
-    InputMaskModule,
-    CnpjFormatPipe,
-    DatePickerModule,
-    InputTextModule,
-    AutoCompleteModule,
-    InputGroupModule,
-    InputGroupAddonModule,
-    ReactiveFormsModule,
-    DropdownModule,
-    IftaLabelModule,
-    CalendarModule,
-    FormsModule,
-    ButtonModule,
-    InputNumberModule,
-    DialogModule,
-    ToolbarModule,
-    CardModule,
-    ToastModule,
-    InputIconModule,
-    ConfirmDialogModule,
-    ToolbarModule,
-    IconFieldModule,
-  ],
+  imports: [CnpjFormatPipe, ...SHARED_IMPORTS, ...PRIMENG_IMPORTS],
   providers: [MessageService, NotaService, ConfirmationService],
   templateUrl: './nota-fiscal.component.html',
   styleUrl: './nota-fiscal.component.scss',
@@ -135,7 +79,7 @@ export class NotaFiscalComponent {
     // Delay apenas para simimular
     this.notaService
       .getNotas()
-      .pipe(delay(500))
+      .pipe(delay(200))
       .subscribe({
         next: (data) => {
           console.log(data);

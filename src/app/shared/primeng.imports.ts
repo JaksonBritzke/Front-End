@@ -13,10 +13,12 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputMaskModule } from 'primeng/inputmask';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { PanelModule } from 'primeng/panel';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 
@@ -28,8 +30,9 @@ export const PRIMENG_IMPORTS = [
   TooltipModule,
   PanelModule,
   InputMaskModule,
+  AutoCompleteModule,
+  InputNumberModule,
   DatePickerModule,
-  InputTextModule,
   InputGroupModule,
   InputGroupAddonModule,
   DropdownModule,
@@ -37,7 +40,6 @@ export const PRIMENG_IMPORTS = [
   CalendarModule,
   ButtonModule,
   DialogModule,
-  ToolbarModule,
   CardModule,
   ToastModule,
   InputIconModule,
