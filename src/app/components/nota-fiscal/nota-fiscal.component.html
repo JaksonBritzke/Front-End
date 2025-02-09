@@ -54,19 +54,16 @@
   </p-table>
 </div>
 
-<!-- Note Entry Dialog -->
 <p-dialog [(visible)]="notaDialog" [modal]="true" [style]="{width: '1000px'}"
   header="Emissão NF entrada" [draggable]="false" [resizable]="false" (onHide)="ocultarModal()">
 
   <p-card styleClass="mb-3">
     <form [formGroup]="notaForm">
-      <!-- Header Information Section -->
       <div class="grid">
-        <!-- Note Number and Date -->
         <div class="col-12">
           <p-panel header="Informações da Nota" styleClass="mb-3">
             <div class="grid">
-              <div class="col-6">
+              <div class="col-3">
                 <div class="field">
                   <label for="numero1" class="block font-medium mb-2">Nro Nota</label>
                   <p-inputNumber id="numero1" formControlName="numero" [showButtons]="false"
@@ -78,7 +75,7 @@
                   </small>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-9">
                 <div class="field">
                   <label for="dataEmissao1" class="block font-medium mb-2">Data de Emissão</label>
                   <p-datePicker id="dataEmissao1" formControlName="dataEmissao" [showIcon]="true"
@@ -124,8 +121,8 @@
             <div class="flex gap-2">
               <p-autoComplete id="produto" [(ngModel)]="produtoDisplay"
                 [ngModelOptions]="{standalone: true}" [suggestions]="produtosFiltrados"
-                (completeMethod)="filtrarProdutos($event)" field="descricao" [forceSelection]="true"
-                [dropdown]="true" styleClass="w-full" (onSelect)="onProdutoSelect($event)">
+                (completeMethod)="filtrarProdutos($event)" field="descricao" [forceSelection]="true" size="small"
+                [dropdown]="true"  (onSelect)="onProdutoSelect($event)">
                 <ng-template let-produto pTemplate="item">
                   <div>
                     {{produto.codigo}} - {{produto.descricao}}
@@ -206,14 +203,14 @@
     <div class="field">
       <label for="valorUnitario" class="block font-medium mb-2">Valor Unitário</label>
       <p-inputNumber #valorUnitarioInput
-      formControlName="valorUnitario"
-      mode="currency"
-      currency="BRL"
-      locale="pt-BR"
-      [minFractionDigits]="2"
-      class="w-full"
-      size="small">
-    </p-inputNumber>
+        formControlName="valorUnitario"
+        mode="currency"
+        currency="BRL"
+        locale="pt-BR"
+        [minFractionDigits]="2"
+        class="w-full"
+        size="small">
+      </p-inputNumber>
     </div>
 
     <div class="field">
