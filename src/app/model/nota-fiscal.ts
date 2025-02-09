@@ -5,6 +5,7 @@ export interface NotaFiscal {
   numero: number;
   dataEmissao: Date;
   fornecedorId: number;
+  fornecedorNome: number;
   valorTotal: number;
   status: string;
   itens: ItemNotaFiscal[];

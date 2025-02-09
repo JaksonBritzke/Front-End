@@ -82,13 +82,16 @@ export class NotaFiscalComponent {
       .pipe(delay(200))
       .subscribe({
         next: (data) => {
-          console.log(data);
           this.notaFiscal = data;
           this.loading = false;
         },
         error: (err) => {
-          console.error('Erro ao carregar notas', err);
           this.loading = false;
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Ops',
+            detail: 'Tente novamente mais tarde.',
+          });
         },
       });
   }
@@ -286,6 +289,7 @@ export class NotaFiscalComponent {
       numero: notaFiscal.numero,
       dataEmissao: new Date(notaFiscal.dataEmissao),
       fornecedorId: notaFiscal.fornecedorId,
+      fornecedorNome: notaFiscal.fornecedorNome,
       valorTotal: notaFiscal.valorTotal,
       itens: notaFiscal.itens,
     });
@@ -300,9 +304,7 @@ export class NotaFiscalComponent {
         },
       });
 
-    // Carregar itens
     this.itensNotaFiscal = notaFiscal.itens.map((item) => {
-      // Carregar dados do produto para cada item
       this.produtoService.getProdutosById(item.produtoId).subscribe({
         next: (produto) => {
           item['produto'] = produto; // Adicionando produto para exibição na tabela
