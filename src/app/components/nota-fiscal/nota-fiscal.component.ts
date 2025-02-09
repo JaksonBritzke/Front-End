@@ -553,6 +553,12 @@ removerItem(item: ItemNotaFiscalView) {
     this.notaForm.patchValue({ valorTotal });
   }
 
+  onKeyUp(event: KeyboardEvent) {
+    if (event.key === 'Enter' && this.produtoSelecionado) {
+      this.abrirModalItem();
+    }
+  }
+
   getTotalValorTotal(): number {
     return this.itensNotaFiscal.reduce((total, nota) => total + nota.valorTotal, 0);
   }
