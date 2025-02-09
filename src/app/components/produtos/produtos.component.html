@@ -15,7 +15,8 @@
         <p-inputgroup-addon>
           <i class="pi pi-search" (click)="clearSearch()"></i>
         </p-inputgroup-addon>
-        <input pInputText placeholder="Filtrar Produtos" #filter (input)="onGlobalFilter($event)" />
+        <input pInputText placeholder="Buscar" #filter (input)="onGlobalFilter($event)"
+          pTooltip="Digite código ou descrição" tooltipPosition="top" />
       </p-inputgroup>
     </ng-template>
   </p-toolbar>

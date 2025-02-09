@@ -52,16 +52,22 @@ export class ProdutosComponent implements OnInit {
 
   carregarProdutos() {
     this.loading = true;
+    // Delay oara simular o loading apenas(teste)
     this.produtoService
       .getProdutos()
-      .pipe(delay(500))
+      .pipe(delay(200))
       .subscribe({
         next: (data) => {
           this.produtos = data;
           this.loading = false;
         },
         error: (err) => {
-          console.error('Erro ao carregar produtos', err);
+          this.loading = false;
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Ops',
+            detail: 'Tente novamente mais tarde.',
+          });
         },
       });
   }
@@ -100,7 +106,6 @@ export class ProdutosComponent implements OnInit {
 
   salvarProduto() {
     this.submitted = true;
-
     if (this.produtoForm.invalid) {
       this.messageService.add({
         severity: 'error',
@@ -113,7 +118,6 @@ export class ProdutosComponent implements OnInit {
     const produto: Produto = { ...this.produtoForm.value };
 
     if (produto.codigo) {
-      // Atualização - Note o uso do codigo como primeiro parâmetro
       this.produtoService.updateProduto(produto.codigo, produto).subscribe({
         next: (response) => {
           this.messageService.add({
@@ -133,7 +137,6 @@ export class ProdutosComponent implements OnInit {
         },
       });
     } else {
-      // Novo cadastro
       this.produtoService.createProduto(produto).subscribe({
         next: (response) => {
           this.messageService.add({
