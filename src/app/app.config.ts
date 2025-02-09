@@ -4,14 +4,11 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideHttpClient } from '@angular/common/http';
 import { routes } from './app.routes';
 import Aura from '@primeng/themes/aura';
-import { registerLocaleData } from '@angular/common';
-import localePt from '@angular/common/locales/pt';
 import {
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
 import { providePrimeNG } from 'primeng/config';
-registerLocaleData(localePt);
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimationsAsync(),
