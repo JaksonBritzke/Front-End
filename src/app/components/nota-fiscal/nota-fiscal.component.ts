@@ -81,6 +81,7 @@ import { NotaFiscal } from '../../model/nota-fiscal';
 export class NotaFiscalComponent {
   @ViewChild('dt3') dt3!: Table;
   @ViewChild('filter') filter!: ElementRef;
+  @ViewChild('valorUnitarioInput') valorUnitarioInput: any;
   loading: boolean = false;
   editando: boolean = false;
   submitted: boolean = false;
@@ -422,6 +423,7 @@ export class NotaFiscalComponent {
     }
   }
 
+
   abrirModalItem() {
     if (!this.produtoSelecionado) return;
 
@@ -430,6 +432,18 @@ export class NotaFiscalComponent {
       valorUnitario: this.produtoSelecionado?.preco || 0,
       quantidade: 1
     });
+
+    // Usando um delay maior e detectando mudanças
+    setTimeout(() => {
+      if (this.valorUnitarioInput) {
+        const inputElement = this.valorUnitarioInput.input?.nativeElement;
+        if (inputElement) {
+          inputElement.click();
+          inputElement.focus();
+          inputElement.select();
+        }
+      }
+    }, 200);
   }
 
   fecharModalItem() {

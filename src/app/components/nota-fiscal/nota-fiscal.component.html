@@ -1,29 +1,33 @@
+<!-- Loading Spinner -->
 <div class="spinner-container" *ngIf="loading">
   <p-progress-spinner strokeWidth="8" fill="transparent" animationDuration=".5s"
     [style]="{ width: '50px', height: '50px' }"></p-progress-spinner>
 </div>
 
-
+<!-- Main Card -->
 <div class="card">
   <p-toast></p-toast>
   <div class="flex justify-content-between align-items-center">
     <h2 class="m-2">Lista de Notas</h2>
   </div>
+
+  <!-- Toolbar -->
   <p-toolbar>
-    <p-button label="Novo" icon="pi pi-plus" (click)="abrirModalCadastro()"  size="small"></p-button>
+    <p-button label="Novo" icon="pi pi-plus" (click)="abrirModalCadastro()" size="small"></p-button>
     <ng-template pTemplate="left">
       <p-inputgroup>
         <p-inputgroup-addon>
           <i class="pi pi-search" (click)="clearSearch()"></i>
         </p-inputgroup-addon>
-        <input pInputText placeholder="Filtrar Notas Fiscais" #filter (input)="onGlobalFilter($event)" />
+        <input pInputText placeholder="Filtrar Notas Fiscais" #filter (input)="onGlobalFilter($event)" size="small" />
       </p-inputgroup>
     </ng-template>
   </p-toolbar>
-  <p-table #dt3 [value]="notaFiscal" [tableStyle]="{'min-width': '50rem'}"
-    [globalFilterFields]="['numero', 'dataEmissao', 'valorTotal', 'fornecedor.nome']" responsiveLayout="scroll"
-    [rows]="10" stripedRows>
 
+  <!-- Notes Table -->
+  <p-table #dt3 [value]="notaFiscal" [tableStyle]="{'min-width': '50rem'}"
+    [globalFilterFields]="['numero', 'dataEmissao', 'valorTotal', 'fornecedor.nome']"
+    responsiveLayout="scroll" [rows]="10" stripedRows>
     <ng-template pTemplate="header">
       <tr>
         <th pSortableColumn="numero">Número <p-sortIcon field="numero"></p-sortIcon></th>
@@ -33,7 +37,6 @@
         <th>Ações</th>
       </tr>
     </ng-template>
-
     <ng-template pTemplate="body" let-notaFiscal>
       <tr>
         <td>{{ notaFiscal.numero }}</td>
@@ -42,10 +45,8 @@
         <td>{{ notaFiscal.valorTotal | currency:'BRL' }}</td>
         <td>
           <div class="flex gap-2">
-            <p-button icon="pi pi-pencil" rounded outlined (click)="editarNotaFiscal(notaFiscal)">
-            </p-button>
-            <p-button icon="pi pi-trash" severity="danger" rounded outlined (click)="excluirNotaFiscal(notaFiscal)">
-            </p-button>
+            <p-button icon="pi pi-pencil" rounded outlined (click)="editarNotaFiscal(notaFiscal)"></p-button>
+            <p-button icon="pi pi-trash" severity="danger" size="small" rounded outlined (click)="excluirNotaFiscal(notaFiscal)"></p-button>
           </div>
         </td>
       </tr>
@@ -53,49 +54,54 @@
   </p-table>
 </div>
 
-
-<p-dialog [(visible)]="notaDialog" [modal]="true" [style]="{width: '1200px', height: '90vh'}"
+<!-- Note Entry Dialog -->
+<p-dialog [(visible)]="notaDialog" [modal]="true" [style]="{width: '1000px'}"
   header="Emissão NF entrada" [draggable]="false" [resizable]="false" (onHide)="ocultarModal()">
-  <p-divider />
 
-  <p-card styleClass="mb-0">
-    <form [formGroup]="notaForm" class="formgrid grid">
-      <!-- Lado Esquerdo -->
-      <div class="col-6 pr-3">
-        <div class="grid">
-          <div class="col-5">
-            <div class="field mb-3">
-              <label for="numero1" class="block font-medium mb-2">Nro Nota</label>
-              <p-inputNumber id="numero1" formControlName="numero" [showButtons]="false" size="small" class="w-full"
-                autofocus [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('fornecedorId')?.invalid}">
-              </p-inputNumber>
-              <small class="p-error block mt-2" *ngIf="submitted && notaForm.get('numero')?.invalid">
-                Número da nota é obrigatório
-              </small>
+  <p-card styleClass="mb-3">
+    <form [formGroup]="notaForm">
+      <!-- Header Information Section -->
+      <div class="grid">
+        <!-- Note Number and Date -->
+        <div class="col-12">
+          <p-panel header="Informações da Nota" styleClass="mb-3">
+            <div class="grid">
+              <div class="col-6">
+                <div class="field">
+                  <label for="numero1" class="block font-medium mb-2">Nro Nota</label>
+                  <p-inputNumber id="numero1" formControlName="numero" [showButtons]="false"
+                    class="w-full" size="small" autofocus
+                    [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('numero')?.invalid}">
+                  </p-inputNumber>
+                  <small class="p-error block mt-2" *ngIf="submitted && notaForm.get('numero')?.invalid">
+                    Número da nota é obrigatório
+                  </small>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="field">
+                  <label for="dataEmissao1" class="block font-medium mb-2">Data de Emissão</label>
+                  <p-datePicker id="dataEmissao1" formControlName="dataEmissao" [showIcon]="true"
+                    class="w-full" size="small" dateFormat="dd/mm/yy"
+                    [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('dataEmissao')?.invalid}">
+                  </p-datePicker>
+                  <small class="p-error block mt-2" *ngIf="submitted && notaForm.get('dataEmissao')?.invalid">
+                    Data de emissão é obrigatória
+                  </small>
+                </div>
+              </div>
             </div>
-          </div>
-
-          <div class="col-7">
-            <div class="field mb-3">
-              <label for="dataEmissao1" class="block font-medium mb-2">Data de Emissão</label>
-              <p-datePicker id="dataEmissao1" formControlName="dataEmissao" [showIcon]="true" class="w-full"
-                size="small" dateFormat="dd/mm/yy"
-                [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('dataEmissao')?.invalid}">
-              </p-datePicker>
-              <small class="p-error block mt-2" *ngIf="submitted && notaForm.get('dataEmissao')?.invalid">
-                Data de emissão é obrigatória
-              </small>
-            </div>
-          </div>
+          </p-panel>
         </div>
-        <div class="grid">
-          <div class="col-12">
-            <div class="field mb-3">
-              <label for="fornecedor" class="block font-medium mb-2">Fornecedor</label>
-              <p-autoComplete id="fornecedor" size="small" [(ngModel)]="fornecedorDisplay"
+
+        <!-- Supplier Section -->
+        <div class="col-12">
+          <p-panel header="Fornecedor" styleClass="mb-3">
+            <div class="field">
+              <p-autoComplete id="fornecedor" [(ngModel)]="fornecedorDisplay"
                 [ngModelOptions]="{standalone: true}" [suggestions]="fornecedoresFiltrados"
                 (completeMethod)="filtrarFornecedor($event)" field="razaoSocial" [forceSelection]="true"
-                [dropdown]="true" styleClass="w-full"
+                [dropdown]="true" styleClass="w-full" size="small"
                 [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('fornecedorId')?.invalid}"
                 (onSelect)="onFornecedorSelect($event)">
                 <ng-template let-fornecedor pTemplate="item">
@@ -109,95 +115,86 @@
                 Fornecedor é obrigatório
               </small>
             </div>
-          </div>
-
-          <div class="col-12">
-            <div class="field mb-3">
-              <label for="produto" class="block font-medium mb-2">Produto</label>
-              <div class="flex gap-2">
-                <p-autoComplete id="produto" size="small" [(ngModel)]="produtoDisplay"
-                  [ngModelOptions]="{standalone: true}" [suggestions]="produtosFiltrados"
-                  (completeMethod)="filtrarProdutos($event)" field="descricao" [forceSelection]="true" [dropdown]="true"
-                  class="custom-autocomplete" (onSelect)="onProdutoSelect($event)">
-                  <ng-template let-produto pTemplate="item">
-                    <div>
-                      {{produto.codigo}} - {{produto.descricao}}
-
-                    </div>
-                  </ng-template>
-                </p-autoComplete>
-                <p-button icon="pi pi-plus" (click)="abrirModalItem()" [disabled]="!produtoSelecionado"></p-button>
-              </div>
-            </div>
-          </div>
+          </p-panel>
         </div>
-        <pre>{{ notaForm.value | json }}</pre>
 
-      </div>
-
-      <!-- Lado Direito -->
-      <div class="col-6 pl-3">
-        <p-panel>
-          <!-- <ng-template pTemplate="header">
-            <div class="flex align-items-center justify-content-between w-full">
-              <span>Adicione os Itens</span>
-            </div>
-          </ng-template> -->
-
-          <p-table [value]="itensNotaFiscal" [tableStyle]="{'min-width': '50rem'}">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Produto</th>
-                <th>Valor Unitário</th>
-                <th>Quantidade</th>
-                <th>Valor Total</th>
-                <th>Ações</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-item>
-              <tr>
-                <td>{{item.produto.descricao}}</td>
-                <td>{{item.valorUnitario | currency:'BRL'}}</td>
-                <td>{{item.quantidade}}</td>
-                <td>{{item.valorTotal | currency:'BRL'}}</td>
-                <td>
-                  <div class="flex gap-2">
-                    <p-button icon="pi pi-pencil" severity="secondary" rounded outlined
-                      (click)="editarItem(item)"></p-button>
-                    <p-button icon="pi pi-trash" severity="danger" rounded outlined
-                      (click)="removerItem(item)"></p-button>
+        <!-- Product Section -->
+        <div class="col-12">
+          <p-panel header="Produto" styleClass="mb-3">
+            <div class="flex gap-2">
+              <p-autoComplete id="produto" [(ngModel)]="produtoDisplay"
+                [ngModelOptions]="{standalone: true}" [suggestions]="produtosFiltrados"
+                (completeMethod)="filtrarProdutos($event)" field="descricao" [forceSelection]="true"
+                [dropdown]="true" styleClass="w-full" (onSelect)="onProdutoSelect($event)">
+                <ng-template let-produto pTemplate="item">
+                  <div>
+                    {{produto.codigo}} - {{produto.descricao}}
                   </div>
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
+                </ng-template>
+              </p-autoComplete>
+              <p-button icon="pi pi-plus" (click)="abrirModalItem()" [disabled]="!produtoSelecionado"></p-button>
+            </div>
+          </p-panel>
+        </div>
 
-
-        </p-panel>
+        <!-- Items Table Section -->
+        <div class="col-12">
+          <p-panel header="Itens da Nota" styleClass="mb-3">
+            <p-table [value]="itensNotaFiscal" [tableStyle]="{'min-width': '50rem'}" styleClass="mb-3">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Produto</th>
+                  <th>Valor Unitário</th>
+                  <th>Quantidade</th>
+                  <th>Valor Total</th>
+                  <th>Ações</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-item>
+                <tr>
+                  <td>{{item.produto.descricao}}</td>
+                  <td>{{item.valorUnitario | currency:'BRL'}}</td>
+                  <td>{{item.quantidade}}</td>
+                  <td>{{item.valorTotal | currency:'BRL'}}</td>
+                  <td>
+                    <div class="flex gap-2">
+                      <p-button icon="pi pi-pencil" severity="secondary" size="small" rounded outlined
+                        (click)="editarItem(item)"></p-button>
+                      <p-button icon="pi pi-trash" severity="danger" rounded outlined
+                        (click)="removerItem(item)"></p-button>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </p-panel>
+        </div>
       </div>
     </form>
   </p-card>
 
+  <!-- Footer -->
   <ng-template pTemplate="footer">
     <div class="flex justify-content-between align-items-center">
-      <!-- Totalizador -->
       <div class="mr-8">
         <strong>Total:</strong> {{ getTotalValorTotal() | currency:'BRL' }}
       </div>
-
-      <!-- Botões de ação -->
       <div class="flex justify-content-end gap-2">
-        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-secondary" (click)="ocultarModal()"></button>
-        <button pButton label="Salvar" icon="pi pi-check" class="p-button-primary" (click)="salvarNota()"></button>
+        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-secondary" size="small"
+          (click)="ocultarModal()"></button>
+        <button pButton label="Salvar" icon="pi pi-check" class="p-button-primary" size="small"
+          (click)="salvarNota()"></button>
       </div>
     </div>
   </ng-template>
 </p-dialog>
-<p-confirmDialog header="Confirmação" icon="pi pi-exclamation-triangle" acceptLabel="Sim" rejectLabel="Não">
+
+<!-- Confirmation Dialog -->
+<p-confirmDialog header="Confirmação" icon="pi pi-exclamation-triangle"
+  acceptLabel="Sim" rejectLabel="Não">
 </p-confirmDialog>
 
-
-<!-- Modal de Item -->
+<!-- Item Dialog -->
 <p-dialog [(visible)]="itemDialog" [modal]="true" [style]="{width: '400px'}"
   [header]="editandoItem ? 'Editar Item' : 'Adicionar Item'" [draggable]="false" [resizable]="false">
   <form [formGroup]="itemForm" class="flex flex-column gap-3">
@@ -208,14 +205,20 @@
 
     <div class="field">
       <label for="valorUnitario" class="block font-medium mb-2">Valor Unitário</label>
-      <p-inputNumber formControlName="valorUnitario" mode="currency" currency="BRL" locale="pt-BR"
-        [minFractionDigits]="2" class="w-full">
-      </p-inputNumber>
+      <p-inputNumber #valorUnitarioInput
+      formControlName="valorUnitario"
+      mode="currency"
+      currency="BRL"
+      locale="pt-BR"
+      [minFractionDigits]="2"
+      class="w-full"
+      size="small">
+    </p-inputNumber>
     </div>
 
     <div class="field">
       <label for="quantidade" class="block font-medium mb-2">Quantidade</label>
-      <p-inputNumber formControlName="quantidade" [showButtons]="true" [min]="1" class="w-full">
+      <p-inputNumber formControlName="quantidade" [showButtons]="true" [min]="1" size="small" class="w-full">
       </p-inputNumber>
     </div>
 
@@ -226,13 +229,15 @@
       </div>
     </div>
   </form>
+
   <ng-template pTemplate="footer">
     <div class="flex justify-content-end gap-2">
-      <p-button label="Cancelar" icon="pi pi-times" (click)="fecharModalItem()" styleClass="p-button-text">
+      <p-button label="Cancelar" icon="pi pi-times" (click)="fecharModalItem()"
+        styleClass="p-button-text">
       </p-button>
-      <p-button label="Adicionar" icon="pi pi-check" (click)="salvarItem()" [disabled]="!itemForm.valid">
+      <p-button label="Adicionar" icon="pi pi-check" (click)="salvarItem()"
+        [disabled]="!itemForm.valid">
       </p-button>
     </div>
   </ng-template>
 </p-dialog>
-
