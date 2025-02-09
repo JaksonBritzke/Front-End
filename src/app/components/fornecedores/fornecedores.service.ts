@@ -20,12 +20,6 @@ export class FornecedorService {
     return this.http.get<Fornecedor>(`${API_URL}/fornecedor/${id}`);
   }
 
-  getFornecedorByDescricao(descricao: string): Observable<Fornecedor> {
-    return this.http.get<Fornecedor>(
-      `${API_URL}/fornecedor/descricao/${descricao}`
-    );
-  }
-
   getFornecedoresByRazaoSocial(razaoSocial: string): Observable<Fornecedor[]> {
     return this.http.get<Fornecedor[]>(
       `${API_URL}/fornecedor/descricao/like/${razaoSocial}`

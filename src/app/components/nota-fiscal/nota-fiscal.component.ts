@@ -137,7 +137,7 @@ export class NotaFiscalComponent {
         },
       });
     } else {
-      this.produtoService.buscarPorDescricao(query).subscribe({
+      this.produtoService.getProdutosPorDescricao(query).subscribe({
         next: (produtos) => {
           this.produtosFiltrados = produtos;
         },

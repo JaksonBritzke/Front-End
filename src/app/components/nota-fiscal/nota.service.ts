@@ -16,10 +16,6 @@ export class NotaService {
     return this.http.get<NotaFiscal[]>(`${API_URL}/notas`);
   }
 
-  getNotasByNumero(id: number): Observable<NotaFiscal> {
-    return this.http.get<NotaFiscal>(`${API_URL}/notas/${id}`);
-  }
-
   createNota(notaFiscal: NotaFiscal): Observable<NotaFiscal> {
     return this.http.post<NotaFiscal>(`${API_URL}/notas`, notaFiscal);
   }

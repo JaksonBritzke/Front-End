@@ -21,14 +21,8 @@ export class ProdutoService {
     return this.http.get<Produto>(`${API_URL}/produtos/${id}`);
   }
 
-  buscarPorDescricao(descricao: string): Observable<ItemNotaFiscal[]> {
+  getProdutosPorDescricao(descricao: string): Observable<ItemNotaFiscal[]> {
     return this.http.get<ItemNotaFiscal[]>(`${API_URL}/produtos/descricao/like/${descricao}`);
-  }
-
-  getProdutosByRazaoSocial(razaoSocial: string): Observable<Produto[]> {
-    return this.http.get<Produto[]>(
-      `${API_URL}/Produtos/descricao/like/${razaoSocial}`
-    );
   }
 
   createProduto(Produtos: Produto): Observable<Produto> {
