@@ -59,7 +59,7 @@ export class NotaFiscalComponent {
     this.notaForm = this.fb.group({
       id: [null],
       numero: [null, [Validators.required]],
-      dataEmissao: ['', [Validators.required]],
+      dataEmissao: [null, [Validators.required]],
       fornecedorId: [null, [Validators.required]],
       valorTotal: [null, [Validators.required]],
       itens: [null, [Validators.required]],
@@ -341,6 +341,9 @@ export class NotaFiscalComponent {
 
   abrirModalCadastro() {
     this.notaForm.reset();
+    this.notaForm.patchValue({
+      dataEmissao: new Date() 
+  });
     this.submitted = false;
     this.notaDialog = true;
   }

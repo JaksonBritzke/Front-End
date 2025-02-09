@@ -79,10 +79,10 @@
               <div class="col-9">
                 <div class="field">
                   <label for="dataEmissao1" class="block font-medium mb-2">Data de Emissão</label>
-                  <p-datePicker id="dataEmissao1" formControlName="dataEmissao" [showIcon]="true" class="w-full"
-                    size="small" dateFormat="dd/mm/yy"
-                    [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('dataEmissao')?.invalid}">
-                  </p-datePicker>
+                  <p-datePicker id="dataEmissao" formControlName="dataEmissao" [showIcon]="true" class="w-full"
+                  size="small" dateFormat="dd/mm/yy" [showTime]="true" hourFormat="24"
+                  [ngClass]="{'ng-invalid ng-dirty': submitted && notaForm.get('dataEmissao')?.invalid}">
+                </p-datePicker>
                   <small class="p-error block mt-2" *ngIf="submitted && notaForm.get('dataEmissao')?.invalid">
                     Data de emissão é obrigatória
                   </small>
